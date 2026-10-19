@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-
+from pathlib import Path
+from fastapi.responses import FileResponse
 from backend.database import Base, engine
 from backend import models
 from backend.routers.laboratorios import router as laboratorios_router
@@ -31,6 +32,5 @@ for rota in gerenciar_reservas_router.routes:
 
 @app.get("/")
 def inicio():
-    return {
-        "mensagem": "Sistema de Gerenciamento de Laboratórios funcionando!"
-    }
+    caminho_html = Path(__file__).resolve().parent.parent / "layout" / "layout.html"
+    return FileResponse(caminho_html)

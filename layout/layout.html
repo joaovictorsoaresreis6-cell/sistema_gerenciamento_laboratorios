@@ -1,0 +1,4424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>LabControl — Sistema de Gerenciamento de Laboratórios</title>
+
+  <style>
+
+    /* =========================================================
+       CORES E VARIÁVEIS
+       Aqui ficam as cores principais utilizadas no sistema.
+       Isso facilita alterar o visual inteiro depois.
+       ========================================================= */
+
+    :root {
+      color-scheme: light dark;
+
+      --bg: light-dark(#f5f7fb, #0f1722);
+      --surface: light-dark(#ffffff, #16202c);
+      --surface-2: light-dark(#f8fafc, #1b2735);
+
+      --text: light-dark(#152033, #edf4fb);
+      --muted: light-dark(#6b778c, #9eacbd);
+
+      --border: light-dark(#e4e9f0, #2c3a4a);
+
+      --accent: light-dark(#2563eb, #5d8dff);
+      --accent-soft: light-dark(#eaf1ff, #1c315c);
+
+      --green: light-dark(#16834a, #54cf8b);
+      --green-soft: light-dark(#e7f7ef, #173b2a);
+
+      --amber: light-dark(#b46a00, #f0b44b);
+      --amber-soft: light-dark(#3b2b14, #3b2b14);
+
+      --red: light-dark(#c53f49, #ff7d87);
+      --red-soft: light-dark(#432027, #432027);
+
+      --shadow: 0 12px 30px rgba(15, 23, 42, .06);
+    }
+
+
+    /* =========================================================
+       CONFIGURAÇÕES GERAIS
+       ========================================================= */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+
+      font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+
+    /* =========================================================
+       ESTRUTURA PRINCIPAL
+       Sidebar + conteúdo principal
+       ========================================================= */
+
+    .app {
+      min-height: 100vh;
+
+      background: var(--bg);
+
+      display: grid;
+
+      grid-template-columns: 250px 1fr;
+    }
+
+
+    /* =========================================================
+       SIDEBAR
+       Barra lateral com logo e menu
+       ========================================================= */
+
+    .sidebar {
+      border-right: 1px solid var(--border);
+
+      background: var(--surface);
+
+      padding: 22px 16px;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 26px;
+    }
+
+
+    /* Logo */
+
+    .brand {
+      display: flex;
+      align-items: center;
+
+      gap: 11px;
+
+      padding: 0 8px;
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+
+      border-radius: 13px;
+
+      display: grid;
+      place-items: center;
+
+      background: var(--accent);
+
+      color: white;
+
+      font-size: 20px;
+
+      box-shadow:
+        0 8px 18px rgba(37, 99, 235, .23);
+    }
+
+    .brand strong {
+      font-size: 15px;
+      letter-spacing: -.2px;
+    }
+
+    .brand span {
+      display: block;
+
+      color: var(--muted);
+
+      font-size: 11px;
+
+      margin-top: 2px;
+    }
+
+
+    /* Título dos grupos do menu */
+
+    .nav-label {
+      font-size: 10px;
+
+      font-weight: 800;
+
+      letter-spacing: .12em;
+
+      color: var(--muted);
+
+      padding: 0 10px;
+
+      margin-bottom: 7px;
+
+      text-transform: uppercase;
+    }
+
+
+    /* Menu */
+
+    .nav {
+      display: grid;
+      gap: 5px;
+    }
+
+    .nav button {
+      border: 0;
+
+      background: transparent;
+
+      color: var(--muted);
+
+      text-align: left;
+
+      padding: 11px 12px;
+
+      border-radius: 11px;
+
+      display: flex;
+
+      gap: 11px;
+
+      align-items: center;
+
+      font-weight: 650;
+    }
+
+    .nav button:hover {
+      background: var(--surface-2);
+
+      color: var(--text);
+    }
+
+    /* Item atualmente selecionado */
+
+    .nav button.active {
+      background: var(--accent-soft);
+
+      color: var(--accent);
+    }
+
+    .nav-icon {
+      width: 22px;
+
+      text-align: center;
+
+      font-size: 16px;
+    }
+
+
+    /* Área de ajuda */
+
+    .sidebar-bottom {
+      margin-top: auto;
+    }
+
+    .help {
+      background: var(--surface-2);
+
+      border: 1px solid var(--border);
+
+      border-radius: 15px;
+
+      padding: 14px;
+    }
+
+    .help strong {
+      font-size: 12px;
+    }
+
+    .help p {
+      margin: 7px 0 11px;
+
+      color: var(--muted);
+
+      font-size: 11px;
+
+      line-height: 1.45;
+    }
+
+    .help button {
+      width: 100%;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--text);
+
+      border-radius: 9px;
+
+      padding: 9px;
+
+      font-size: 11px;
+
+      font-weight: 750;
+    }
+
+
+    /* =========================================================
+       ÁREA PRINCIPAL
+       ========================================================= */
+
+    main {
+      min-width: 0;
+    }
+
+
+    /* =========================================================
+       TOPBAR
+       Barra superior
+       ========================================================= */
+
+    .topbar {
+      height: 75px;
+
+      background: var(--surface);
+
+      border-bottom: 1px solid var(--border);
+
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding: 0 30px;
+
+      gap: 20px;
+
+      position: sticky;
+
+      top: 0;
+
+      z-index: 5;
+    }
+
+
+    /* Caminho da página */
+
+    .breadcrumb {
+      font-size: 12px;
+
+      color: var(--muted);
+    }
+
+    .breadcrumb strong {
+      color: var(--text);
+    }
+
+
+    /* Ações da barra superior */
+
+    .top-actions {
+      display: flex;
+
+      align-items: center;
+
+      gap: 10px;
+    }
+
+
+    /* Pesquisa */
+
+    .search {
+      width: 260px;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface-2);
+
+      color: var(--text);
+
+      border-radius: 11px;
+
+      padding: 10px 12px;
+
+      outline: none;
+    }
+
+    .search:focus {
+      border-color: var(--accent);
+
+      box-shadow:
+        0 0 0 3px var(--accent-soft);
+    }
+
+
+    /* Botão de notificação */
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+
+      border-radius: 10px;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--muted);
+    }
+
+    .icon-btn:hover {
+      color: var(--text);
+
+      background: var(--surface-2);
+    }
+
+
+    /* Usuário */
+
+    .profile {
+      display: flex;
+
+      align-items: center;
+
+      gap: 9px;
+
+      margin-left: 5px;
+    }
+
+    .avatar {
+      width: 35px;
+      height: 35px;
+
+      border-radius: 50%;
+
+      display: grid;
+
+      place-items: center;
+
+      background: #dbeafe;
+
+      color: #1d4ed8;
+
+      font-weight: 800;
+
+      font-size: 12px;
+    }
+
+    .profile strong {
+      font-size: 11px;
+
+      display: block;
+    }
+
+    .profile span {
+      color: var(--muted);
+
+      font-size: 10px;
+    }
+
+
+    /* =========================================================
+       DASHBOARD
+       Tela inicial do sistema
+       ========================================================= */
+
+    .content {
+      padding: 30px;
+    }
+
+
+    /* Cabeçalho do Dashboard */
+
+    .hero {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: end;
+
+      gap: 20px;
+
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      margin: 0;
+
+      font-size: 27px;
+
+      letter-spacing: -.7px;
+    }
+
+    .hero p {
+      color: var(--muted);
+
+      margin: 7px 0 0;
+
+      font-size: 13px;
+    }
+
+
+    /* Botão azul principal */
+
+    .primary {
+      border: 0;
+
+      background: var(--accent);
+
+      color: white;
+
+      padding: 11px 16px;
+
+      border-radius: 10px;
+
+      font-weight: 800;
+
+      box-shadow:
+        0 8px 18px rgba(37, 99, 235, .2);
+    }
+
+    .primary:hover {
+      filter: brightness(1.06);
+    }
+
+
+    /* Cards de indicadores */
+
+    .grid-stats {
+      display: grid;
+
+      grid-template-columns:
+        repeat(4, minmax(0, 1fr));
+
+      gap: 15px;
+    }
+
+    .card {
+      background: var(--surface);
+
+      border: 1px solid var(--border);
+
+      border-radius: 16px;
+
+      box-shadow: var(--shadow);
+    }
+
+    .stat {
+      padding: 17px;
+    }
+
+    .stat-top {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+    }
+
+    .stat-label {
+      color: var(--muted);
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+    .stat-icon {
+      width: 31px;
+      height: 31px;
+
+      display: grid;
+
+      place-items: center;
+
+      border-radius: 9px;
+
+      background: var(--accent-soft);
+
+      color: var(--accent);
+    }
+
+    .stat h2 {
+      margin: 13px 0 5px;
+
+      font-size: 26px;
+
+      letter-spacing: -.8px;
+    }
+
+    .delta {
+      font-size: 10px;
+
+      font-weight: 750;
+    }
+
+    .delta.good {
+      color: var(--green);
+    }
+
+    .delta.neutral {
+      color: var(--muted);
+    }
+
+
+    /* Seções do Dashboard */
+
+    .section-grid {
+      display: grid;
+
+      grid-template-columns: 1.4fr .9fr;
+
+      gap: 18px;
+
+      margin-top: 18px;
+    }
+
+    .panel {
+      padding: 18px;
+    }
+
+    .panel-head {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 12px;
+
+      margin-bottom: 15px;
+    }
+
+    .panel-head h3 {
+      margin: 0;
+
+      font-size: 14px;
+    }
+
+    .panel-head button {
+      border: 0;
+
+      background: transparent;
+
+      color: var(--accent);
+
+      font-weight: 750;
+
+      font-size: 11px;
+    }
+
+
+    /* Lista de laboratórios */
+
+    .labs {
+      display: grid;
+
+      gap: 10px;
+    }
+
+    .lab {
+      border: 1px solid var(--border);
+
+      border-radius: 13px;
+
+      padding: 13px;
+
+      display: grid;
+
+      grid-template-columns: 1fr auto;
+
+      gap: 12px;
+    }
+
+    .lab-title {
+      display: flex;
+
+      align-items: center;
+
+      gap: 9px;
+    }
+
+    .lab-title strong {
+      font-size: 12px;
+    }
+
+    .lab-meta {
+      color: var(--muted);
+
+      font-size: 10px;
+
+      margin-top: 5px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+
+      border-radius: 50%;
+    }
+
+    .available .dot {
+      background: var(--green);
+    }
+
+    .busy .dot {
+      background: var(--amber);
+    }
+
+    .maint .dot {
+      background: var(--red);
+    }
+
+
+    /* Tags de status */
+
+    .tag {
+      border-radius: 999px;
+
+      padding: 6px 9px;
+
+      font-size: 9px;
+
+      font-weight: 800;
+
+      align-self: start;
+    }
+
+    .available .tag {
+      background: var(--green-soft);
+
+      color: var(--green);
+    }
+
+    .busy .tag {
+      background: var(--amber-soft);
+
+      color: var(--amber);
+    }
+
+    .maint .tag {
+      background: var(--red-soft);
+
+      color: var(--red);
+    }
+
+
+    /* Agenda */
+
+    .agenda {
+      display: grid;
+
+      gap: 12px;
+    }
+
+    .event {
+      display: grid;
+
+      grid-template-columns: 54px 1fr;
+
+      gap: 11px;
+    }
+
+    .time {
+      color: var(--muted);
+
+      font-size: 10px;
+
+      font-weight: 800;
+
+      padding-top: 2px;
+    }
+
+    .event-body {
+      border-left: 2px solid var(--accent-soft);
+
+      padding:
+        0
+        0
+        11px
+        11px;
+    }
+
+    .event-body strong {
+      font-size: 11px;
+    }
+
+    .event-body div {
+      margin-top: 4px;
+
+      color: var(--muted);
+
+      font-size: 10px;
+    }
+
+
+    /* Área inferior do Dashboard */
+
+    .lower-grid {
+      display: grid;
+
+      grid-template-columns: 1.1fr .9fr;
+
+      gap: 18px;
+
+      margin-top: 18px;
+    }
+
+    .progress-wrap {
+      margin-top: 10px;
+    }
+
+    .progress-meta {
+      display: flex;
+
+      justify-content: space-between;
+
+      margin-bottom: 7px;
+
+      font-size: 10px;
+
+      font-weight: 700;
+    }
+
+    .progress-meta span:last-child {
+      color: var(--muted);
+    }
+
+    .bar {
+      height: 8px;
+
+      background: var(--surface-2);
+
+      border-radius: 999px;
+
+      overflow: hidden;
+
+      border: 1px solid var(--border);
+    }
+
+    .fill {
+      height: 100%;
+
+      background: var(--accent);
+
+      border-radius: inherit;
+    }
+
+
+    /* Reservas recentes do Dashboard */
+
+    .reservation-list {
+      display: grid;
+
+      gap: 9px;
+    }
+
+    .res {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      padding: 11px 12px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 11px;
+    }
+
+    .res strong {
+      font-size: 10px;
+    }
+
+    .res div {
+      color: var(--muted);
+
+      font-size: 9px;
+
+      margin-top: 3px;
+    }
+
+
+    /* Status da reserva */
+
+    .status {
+      font-size: 9px;
+
+      font-weight: 800;
+
+      border-radius: 999px;
+
+      padding: 5px 8px;
+    }
+
+    .status.ok {
+      background: var(--green-soft);
+
+      color: var(--green);
+    }
+
+    .status.pending {
+      background: var(--accent-soft);
+
+      color: var(--accent);
+    }
+
+
+    /* =========================================================
+       MENSAGEM TEMPORÁRIA
+       ========================================================= */
+
+    .toast {
+      position: fixed;
+
+      right: 22px;
+
+      bottom: 22px;
+
+      background: var(--text);
+
+      color: var(--surface);
+
+      border-radius: 12px;
+
+      padding: 11px 14px;
+
+      font-size: 11px;
+
+      font-weight: 700;
+
+      opacity: 0;
+
+      transform: translateY(8px);
+
+      pointer-events: none;
+
+      transition: .2s ease;
+    }
+
+    .toast.show {
+      opacity: 1;
+
+      transform: translateY(0);
+    }
+
+
+    /* =========================================================
+       PÁGINAS INTERNAS
+       Estilo reaproveitado pelas outras telas
+       ========================================================= */
+
+    .content.module-hidden {
+      display: none;
+    }
+
+    .module-page {
+      padding: 30px;
+    }
+
+    .module-toolbar {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: end;
+
+      gap: 18px;
+
+      margin-bottom: 22px;
+    }
+
+    .module-toolbar h1 {
+      margin: 0;
+
+      font-size: 27px;
+
+      letter-spacing: -.7px;
+    }
+
+    .module-toolbar p {
+      color: var(--muted);
+
+      margin: 7px 0 0;
+
+      font-size: 13px;
+    }
+
+    .toolbar-actions {
+      display: flex;
+
+      gap: 9px;
+
+      align-items: center;
+    }
+
+
+    /* Botão secundário */
+
+    .secondary {
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--text);
+
+      padding: 10px 14px;
+
+      border-radius: 10px;
+
+      font-weight: 750;
+    }
+
+    .secondary:hover {
+      background: var(--surface-2);
+    }
+
+
+    /* =========================================================
+       LABORATÓRIOS
+       ========================================================= */
+
+    .lab-summary {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 15px;
+
+      margin-bottom: 18px;
+    }
+
+    .summary-card {
+      padding: 16px;
+    }
+
+    .summary-card span {
+      color: var(--muted);
+
+      font-size: 11px;
+
+      font-weight: 700;
+    }
+
+    .summary-card strong {
+      display: block;
+
+      margin-top: 8px;
+
+      font-size: 23px;
+    }
+
+
+    /* Tabela */
+
+    .table-card {
+      overflow: hidden;
+    }
+
+    .table-head {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      padding: 17px 18px;
+
+      border-bottom: 1px solid var(--border);
+
+      gap: 12px;
+    }
+
+    .table-head h3 {
+      margin: 0;
+
+      font-size: 14px;
+    }
+
+    .table-search {
+      width: 230px;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface-2);
+
+      color: var(--text);
+
+      border-radius: 10px;
+
+      padding: 9px 11px;
+
+      outline: none;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+
+      border-collapse: collapse;
+
+      min-width: 720px;
+    }
+
+    th,
+    td {
+      padding: 13px 18px;
+
+      text-align: left;
+
+      border-bottom: 1px solid var(--border);
+
+      font-size: 11px;
+    }
+
+    th {
+      color: var(--muted);
+
+      background: var(--surface-2);
+
+      font-size: 10px;
+
+      text-transform: uppercase;
+
+      letter-spacing: .05em;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .lab-name {
+      font-weight: 800;
+    }
+
+    .lab-detail {
+      color: var(--muted);
+
+      font-size: 9px;
+
+      margin-top: 3px;
+    }
+
+    .actions {
+      display: flex;
+
+      gap: 7px;
+    }
+
+    .row-btn {
+      border: 1px solid var(--border);
+
+      background: var(--surface);
+
+      color: var(--muted);
+
+      border-radius: 8px;
+
+      padding: 6px 8px;
+
+      font-size: 10px;
+
+      font-weight: 750;
+    }
+
+    .row-btn:hover {
+      color: var(--text);
+
+      background: var(--surface-2);
+    }
+
+    .tag.available {
+      background: var(--green-soft);
+
+      color: var(--green);
+    }
+
+    .tag.busy {
+      background: var(--amber-soft);
+
+      color: var(--amber);
+    }
+
+    .tag.maint {
+      background: var(--red-soft);
+
+      color: var(--red);
+    }
+
+
+    /* =========================================================
+       MODAIS
+       Janelas usadas para cadastro e edição
+       ========================================================= */
+
+    .modal-backdrop {
+      position: fixed;
+
+      inset: 0;
+
+      background:
+        rgba(15, 23, 42, .35);
+
+      display: none;
+
+      align-items: center;
+
+      justify-content: center;
+
+      padding: 20px;
+
+      z-index: 20;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal {
+      width: min(520px, 100%);
+
+      background: var(--surface);
+
+      border: 1px solid var(--border);
+
+      border-radius: 18px;
+
+      box-shadow:
+        0 24px 70px rgba(15, 23, 42, .2);
+
+      padding: 21px;
+    }
+
+    .modal-head {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: start;
+
+      gap: 12px;
+
+      margin-bottom: 18px;
+    }
+
+    .modal-head h3 {
+      margin: 0;
+
+      font-size: 17px;
+    }
+
+    .modal-head p {
+      margin: 5px 0 0;
+
+      color: var(--muted);
+
+      font-size: 11px;
+    }
+
+    .close-btn {
+      border: 0;
+
+      background: transparent;
+
+      color: var(--muted);
+
+      font-size: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+
+      grid-template-columns: 1fr 1fr;
+
+      gap: 13px;
+    }
+
+    .field {
+      display: grid;
+
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      font-size: 10px;
+
+      font-weight: 800;
+
+      color: var(--muted);
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface-2);
+
+      color: var(--text);
+
+      border-radius: 9px;
+
+      padding: 9px 10px;
+
+      outline: none;
+    }
+
+    .modal-actions {
+      display: flex;
+
+      justify-content: flex-end;
+
+      gap: 8px;
+
+      margin-top: 18px;
+    }
+
+
+    /* =========================================================
+       RESERVAS
+       ========================================================= */
+
+    .reservation-summary {
+      display: grid;
+
+      grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+      gap: 15px;
+
+      margin-bottom: 18px;
+    }
+
+    .reservation-filters {
+      display: flex;
+
+      gap: 9px;
+
+      align-items: center;
+    }
+
+    .reservation-filters input,
+    .reservation-filters select {
+      border: 1px solid var(--border);
+
+      background: var(--surface-2);
+
+      color: var(--text);
+
+      border-radius: 10px;
+
+      padding: 9px 10px;
+
+      outline: none;
+    }
+
+    .reservation-filters input {
+      width: 190px;
+    }
+
+    .reservation-filters select {
+      min-width: 140px;
+    }
+
+    .reservation-time {
+      font-weight: 800;
+    }
+
+    .reservation-person {
+      display: flex;
+
+      align-items: center;
+
+      gap: 8px;
+    }
+
+    .mini-avatar {
+      width: 28px;
+      height: 28px;
+
+      border-radius: 50%;
+
+      display: grid;
+
+      place-items: center;
+
+      background: var(--accent-soft);
+
+      color: var(--accent);
+
+      font-size: 9px;
+
+      font-weight: 800;
+    }
+
+    .reservation-person strong {
+      display: block;
+
+      font-size: 10px;
+    }
+
+    .reservation-person span {
+      display: block;
+
+      margin-top: 2px;
+
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+
+    /* =========================================================
+       DISPONIBILIDADE
+       ========================================================= */
+
+    .availability-hero {
+      display: grid;
+
+      grid-template-columns: 1.1fr .9fr;
+
+      gap: 18px;
+
+      margin-bottom: 18px;
+    }
+
+    .availability-form {
+      padding: 20px;
+    }
+
+    .availability-form h3,
+    .availability-results h3 {
+      margin: 0;
+
+      font-size: 14px;
+    }
+
+    .availability-form p {
+      color: var(--muted);
+
+      margin: 6px 0 16px;
+
+      font-size: 11px;
+    }
+
+    .availability-fields {
+      display: grid;
+
+      grid-template-columns:
+        1fr 1fr 1fr;
+
+      gap: 10px;
+    }
+
+    .availability-field {
+      display: grid;
+
+      gap: 6px;
+    }
+
+    .availability-field label {
+      color: var(--muted);
+
+      font-size: 10px;
+
+      font-weight: 800;
+    }
+
+    .availability-field input,
+    .availability-field select {
+      width: 100%;
+
+      border: 1px solid var(--border);
+
+      background: var(--surface-2);
+
+      color: var(--text);
+
+      border-radius: 9px;
+
+      padding: 9px 10px;
+
+      outline: none;
+    }
+
+    .availability-action {
+      margin-top: 13px;
+    }
+
+    .availability-results {
+      padding: 20px;
+    }
+
+    .availability-results-head {
+      display: flex;
+
+      justify-content: space-between;
+
+      align-items: center;
+
+      gap: 12px;
+
+      margin-bottom: 14px;
+    }
+
+    .availability-results-head span {
+      color: var(--muted);
+
+      font-size: 10px;
+    }
+
+    .availability-list {
+      display: grid;
+
+      gap: 9px;
+    }
+
+    .availability-item {
+      display: flex;
+
+      align-items: center;
+
+      justify-content: space-between;
+
+      gap: 12px;
+
+      border: 1px solid var(--border);
+
+      border-radius: 11px;
+
+      padding: 12px;
+    }
+
+    .availability-item strong {
+      display: block;
+
+      font-size: 11px;
+    }
+
+    .availability-item p {
+      margin: 4px 0 0;
+
+      color: var(--muted);
+
+      font-size: 9px;
+    }
+
+    .availability-status {
+      border-radius: 999px;
+
+      padding: 6px 9px;
+
+      font-size: 9px;
+
+      font-weight: 800;
+    }
+
+    .availability-status.free {
+      background: var(--green-soft);
+
+      color: var(--green);
+    }
+
+    .availability-status.busy {
+      background: var(--amber-soft);
+
+      color: var(--amber);
+    }
+
+    .availability-status.maintenance {
+      background: var(--red-soft);
+
+      color: var(--red);
+    }
+
+    .availability-note {
+      margin-top: 14px;
+
+      border-radius: 11px;
+
+      padding: 11px 12px;
+
+      background: var(--accent-soft);
+
+      color: var(--accent);
+
+      font-size: 10px;
+
+      line-height: 1.45;
+    }
+
+
+    /* =========================================================
+       RESPONSIVIDADE
+       Ajusta o layout para telas menores.
+       ========================================================= */
+
+    @media (max-width: 1050px) {
+
+      .grid-stats {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .section-grid,
+      .lower-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .search {
+        width: 190px;
+      }
+
+      .lab-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .reservation-summary {
+        grid-template-columns: 1fr;
+      }
+
+      .availability-hero {
+        grid-template-columns: 1fr;
+      }
+    }
+
+
+    @media (max-width: 760px) {
+
+      .app {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: static;
+
+        border-right: 0;
+
+        border-bottom: 1px solid var(--border);
+
+        padding: 13px 14px;
+      }
+
+      .nav {
+        grid-template-columns:
+          repeat(3, 1fr);
+      }
+
+      .nav button {
+        justify-content: center;
+
+        font-size: 10px;
+
+        padding: 9px;
+      }
+
+      .nav-icon {
+        width: auto;
+      }
+
+      .nav-label,
+      .sidebar-bottom,
+      .nav button span:not(.nav-icon) {
+        display: none;
+      }
+
+      .topbar {
+        padding: 0 16px;
+      }
+
+      .breadcrumb,
+      .search {
+        display: none;
+      }
+
+      .content {
+        padding: 18px 14px;
+      }
+
+      .hero {
+        align-items: start;
+
+        flex-direction: column;
+      }
+
+      .grid-stats {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .module-toolbar {
+        align-items: start;
+
+        flex-direction: column;
+      }
+
+      .reservation-filters {
+        width: 100%;
+
+        flex-wrap: wrap;
+      }
+
+      .availability-fields {
+        grid-template-columns: 1fr;
+      }
+    }
+
+  </style>
+</head>
+
+
+<body>
+
+  <!-- =========================================================
+       ESTRUTURA PRINCIPAL
+       ========================================================= -->
+
+  <div class="app">
+
+
+    <!-- =======================================================
+         SIDEBAR
+         Menu lateral de navegação
+         ======================================================= -->
+
+    <aside class="sidebar">
+
+
+      <!-- Logo -->
+
+      <div class="brand">
+
+        <div class="brand-mark">
+          🧪
+        </div>
+
+        <div>
+
+          <strong>
+            LabControl
+          </strong>
+
+          <span>
+            Gestão de laboratórios
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <!-- Menu -->
+
+      <div>
+
+        <div class="nav-label">
+          Menu principal
+        </div>
+
+
+        <nav class="nav">
+
+
+          <!-- Dashboard -->
+
+          <button
+            class="active"
+            data-page="Visão geral"
+          >
+
+            <span class="nav-icon">
+              ▦
+            </span>
+
+            <span>
+              Visão geral
+            </span>
+
+          </button>
+
+
+          <!-- Laboratórios -->
+
+          <button
+            data-page="Laboratórios"
+          >
+
+            <span class="nav-icon">
+              ⌂
+            </span>
+
+            <span>
+              Laboratórios
+            </span>
+
+          </button>
+
+
+          <!-- Reservas -->
+
+          <button
+            data-page="Reservas"
+          >
+
+            <span class="nav-icon">
+              ▣
+            </span>
+
+            <span>
+              Reservas
+            </span>
+
+          </button>
+
+
+          <!-- Disponibilidade -->
+
+          <button
+            data-page="Disponibilidade"
+          >
+
+            <span class="nav-icon">
+              ◷
+            </span>
+
+            <span>
+              Disponibilidade
+            </span>
+
+          </button>
+
+
+          <!-- Outras telas ainda serão criadas -->
+
+          <button data-page="Aulas">
+
+            <span class="nav-icon">
+              ▤
+            </span>
+
+            <span>
+              Aulas
+            </span>
+
+          </button>
+
+
+          <button data-page="Manutenções">
+
+            <span class="nav-icon">
+              ⚙
+            </span>
+
+            <span>
+              Manutenções
+            </span>
+
+          </button>
+
+        </nav>
+
+
+        <!-- Segundo grupo -->
+
+        <div
+          class="nav-label"
+          style="margin-top:20px"
+        >
+
+          Sistema
+
+        </div>
+
+
+        <nav class="nav">
+
+          <button data-page="Computadores">
+
+            <span class="nav-icon">
+              ▤
+            </span>
+
+            <span>
+              Computadores
+            </span>
+
+          </button>
+
+
+          <button data-page="Professores">
+
+            <span class="nav-icon">
+              ♙
+            </span>
+
+            <span>
+              Professores
+            </span>
+
+          </button>
+
+
+          <button data-page="Usuários">
+
+            <span class="nav-icon">
+              ♙
+            </span>
+
+            <span>
+              Usuários
+            </span>
+
+          </button>
+
+
+          <button data-page="Notificações">
+
+            <span class="nav-icon">
+              🔔
+            </span>
+
+            <span>
+              Notificações
+            </span>
+
+          </button>
+
+        </nav>
+
+      </div>
+
+
+      <!-- Ajuda -->
+
+      <div class="sidebar-bottom">
+
+        <div class="help">
+
+          <strong>
+            Precisa de ajuda?
+          </strong>
+
+          <p>
+            Consulte a equipe responsável pelo sistema.
+          </p>
+
+          <button
+            onclick="toast('Central de ajuda selecionada')"
+          >
+
+            Abrir suporte
+
+          </button>
+
+        </div>
+
+      </div>
+
+    </aside>
+
+
+    <!-- =======================================================
+         ÁREA PRINCIPAL
+         ======================================================= -->
+
+    <main>
+
+
+      <!-- TOPBAR -->
+
+      <header class="topbar">
+
+
+        <!-- Breadcrumb -->
+
+        <div class="breadcrumb">
+
+          Sistema /
+
+          <strong id="crumb">
+            Visão geral
+          </strong>
+
+        </div>
+
+
+        <!-- Ações -->
+
+        <div class="top-actions">
+
+
+          <!-- Pesquisa -->
+
+          <input
+            id="search"
+            class="search"
+            placeholder="Buscar laboratório ou reserva..."
+          >
+
+
+          <!-- Notificações -->
+
+          <button
+            class="icon-btn"
+            onclick="toast('Você não tem novas notificações')"
+          >
+
+            🔔
+
+          </button>
+
+
+          <!-- Perfil -->
+
+          <div class="profile">
+
+            <div class="avatar">
+              JV
+            </div>
+
+            <div>
+
+              <strong>
+                João Victor
+              </strong>
+
+              <span>
+                Administrador
+              </span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </header>
+
+
+      <!-- =====================================================
+           TELA 1 — DASHBOARD
+           ===================================================== -->
+
+      <section
+        class="content"
+        id="dashboard-content"
+      >
+
+
+        <!-- Cabeçalho -->
+
+        <div class="hero">
+
+          <div>
+
+            <h1>
+              Visão geral
+            </h1>
+
+            <p>
+              Acompanhe laboratórios,
+              reservas, aulas,
+              manutenção e disponibilidade.
+            </p>
+
+          </div>
+
+
+          <button
+            class="primary"
+            onclick="toast('Fluxo de nova reserva aberto')"
+          >
+
+            ＋ Nova reserva
+
+          </button>
+
+        </div>
+
+
+        <!-- Indicadores -->
+
+        <div class="grid-stats">
+
+
+          <div class="card stat">
+
+            <div class="stat-top">
+
+              <span class="stat-label">
+                Laboratórios
+              </span>
+
+              <span class="stat-icon">
+                🧪
+              </span>
+
+            </div>
+
+            <h2 id="dashboardTotalLaboratorios">
+              0
+            </h2>
+
+            <span class="delta good" id="dashboardLaboratoriosDisponiveis">
+               0 disponíveis no momento
+            </span>
+
+          </div>
+
+
+          <div class="card stat">
+
+            <div class="stat-top">
+
+              <span class="stat-label">
+                Reservas hoje
+              </span>
+
+              <span class="stat-icon">
+                ▣
+              </span>
+
+            </div>
+
+            <h2 id="totalReservasHoje">
+              0
+            </h2>
+
+            <span class="delta neutral">
+              5 ainda pendentes
+            </span>
+
+          </div>
+
+
+          <div class="card stat">
+
+            <div class="stat-top">
+
+              <span class="stat-label">
+                Em manutenção
+              </span>
+
+              <span class="stat-icon">
+                ⚙
+              </span>
+
+            </div>
+
+            <h2 id="dashboardLaboratoriosManutencao">
+              0
+            </h2>
+
+            <span class="delta neutral">
+              1 retorna amanhã
+            </span>
+
+          </div>
+
+
+          <div class="card stat">
+
+            <div class="stat-top">
+
+              <span class="stat-label">
+                Computadores
+              </span>
+
+              <span class="stat-icon">
+                ▤
+              </span>
+
+            </div>
+
+            <h2>
+              86
+            </h2>
+
+            <span class="delta good">
+              79 disponíveis
+            </span>
+
+          </div>
+
+        </div>
+
+
+        <!-- Status + aulas -->
+
+        <div class="section-grid">
+
+
+          <!-- Status dos laboratórios -->
+
+          <section class="card panel">
+
+            <div class="panel-head">
+
+              <h3>
+                Status dos laboratórios
+              </h3>
+
+              <button
+                onclick="toast('Lista completa de laboratórios')"
+              >
+                Ver todos
+              </button>
+
+            </div>
+
+
+            <div
+              class="labs"
+              id="labs"
+            >
+
+
+
+              <p>Carregando laboratórios...</p>
+
+
+
+                
+            </div>
+
+          </section>
+
+
+          <!-- Aulas -->
+
+          <section class="card panel">
+
+            <div class="panel-head">
+
+              <h3>
+                Aulas de hoje
+              </h3>
+
+              <button
+                onclick="toast('Agenda de aulas selecionada')"
+              >
+                Agenda
+              </button>
+
+            </div>
+
+
+            <div class="agenda">
+
+
+              <div class="event">
+
+                <div class="time">
+                  08:00
+                </div>
+
+                <div class="event-body">
+
+                  <strong>
+                    Aula prática de Redes
+                  </strong>
+
+                  <div>
+                    Lab. de Redes · 18 alunos
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="event">
+
+                <div class="time">
+                  10:30
+                </div>
+
+                <div class="event-body">
+
+                  <strong>
+                    Projeto de extensão
+                  </strong>
+
+                  <div>
+                    Informática 01 · 12 alunos
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="event">
+
+                <div class="time">
+                  14:00
+                </div>
+
+                <div class="event-body">
+
+                  <strong>
+                    Laboratório de Química
+                  </strong>
+
+                  <div>
+                    Turma 2B · 21 alunos
+                  </div>
+
+                </div>
+
+              </div>
+
+
+              <div class="event">
+
+                <div class="time">
+                  16:30
+                </div>
+
+                <div class="event-body">
+
+                  <strong>
+                    Treinamento interno
+                  </strong>
+
+                  <div>
+                    Informática 02 · 10 pessoas
+                  </div>
+
+                </div>
+
+              </div>
+
+
+            </div>
+
+          </section>
+
+        </div>
+
+
+        <!-- Parte inferior -->
+
+        <div class="lower-grid">
+
+
+          <!-- Ocupação -->
+
+          <section class="card panel">
+
+            <div class="panel-head">
+
+              <h3>
+                Ocupação por categoria
+              </h3>
+
+              <button
+                onclick="toast('Relatório de ocupação aberto')"
+              >
+                Relatório
+              </button>
+
+            </div>
+
+
+            <div class="progress-wrap">
+
+              <div class="progress-meta">
+                <span>Informática</span>
+                <span>86%</span>
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="fill"
+                  style="width:86%"
+                ></div>
+
+              </div>
+
+            </div>
+
+
+            <div class="progress-wrap">
+
+              <div class="progress-meta">
+                <span>Química</span>
+                <span>72%</span>
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="fill"
+                  style="width:72%"
+                ></div>
+
+              </div>
+
+            </div>
+
+
+            <div class="progress-wrap">
+
+              <div class="progress-meta">
+                <span>Redes</span>
+                <span>64%</span>
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="fill"
+                  style="width:64%"
+                ></div>
+
+              </div>
+
+            </div>
+
+
+            <div class="progress-wrap">
+
+              <div class="progress-meta">
+                <span>Eletrônica</span>
+                <span>48%</span>
+              </div>
+
+              <div class="bar">
+
+                <div
+                  class="fill"
+                  style="width:48%"
+                ></div>
+
+              </div>
+
+            </div>
+
+          </section>
+
+
+          <!-- Reservas recentes -->
+
+          <section class="card panel">
+
+            <div class="panel-head">
+
+              <h3>
+                Reservas recentes
+              </h3>
+
+              <button
+                onclick="toast('Reservas recentes selecionadas')"
+              >
+                Ver todas
+              </button>
+
+            </div>
+
+
+            <div class="reservation-list">
+
+
+              <div class="res">
+
+                <div>
+
+                  <strong>
+                    Mariana Costa
+                  </strong>
+
+                  <div>
+                    Lab. de Redes · 09:00
+                  </div>
+
+                </div>
+
+                <span class="status ok">
+                  Confirmada
+                </span>
+
+              </div>
+
+
+              <div class="res">
+
+                <div>
+
+                  <strong>
+                    Lucas Almeida
+                  </strong>
+
+                  <div>
+                    Informática 01 · 11:00
+                  </div>
+
+                </div>
+
+                <span class="status ok">
+                  Confirmada
+                </span>
+
+              </div>
+
+
+              <div class="res">
+
+                <div>
+
+                  <strong>
+                    Beatriz Santos
+                  </strong>
+
+                  <div>
+                    Lab. de Química · 15:00
+                  </div>
+
+                </div>
+
+                <span class="status pending">
+                  Pendente
+                </span>
+
+              </div>
+
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </section>
+
+
+      <!-- =====================================================
+           TELA 2 — LABORATÓRIOS
+           ===================================================== -->
+
+      <section
+        class="module-page"
+        id="laboratorios-page"
+        style="display:none"
+      >
+
+
+        <!-- Cabeçalho -->
+
+        <div class="module-toolbar">
+
+          <div>
+
+            <h1>
+              Laboratórios
+            </h1>
+
+            <p>
+              Consulte e gerencie os laboratórios
+              cadastrados no sistema.
+            </p>
+
+          </div>
+
+
+          <div class="toolbar-actions">
+
+            <button
+              class="secondary"
+              onclick="toast('Filtros de laboratórios selecionados')"
+            >
+              Filtrar
+            </button>
+
+            <button
+              class="primary"
+              onclick="openLabModal()"
+            >
+              ＋ Novo laboratório
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Resumo -->
+
+        <div class="lab-summary">
+
+          <div class="card summary-card">
+
+            <span>
+              Total de laboratórios
+            </span>
+
+            <strong id="totalLaboratorios">
+              0
+            </strong>
+          </div>
+
+
+          <div class="card summary-card">
+
+            <span>
+              Disponíveis
+            </span>
+
+            <strong id="laboratoriosDisponiveis">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="card summary-card">
+
+            <span>
+              Em manutenção
+            </span>
+
+            <strong id="laboratoriosManutencao">
+              0
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- Tabela -->
+
+        <section class="card table-card">
+
+          <div class="table-head">
+
+            <h3>
+              Laboratórios cadastrados
+            </h3>
+
+            <input
+              id="labSearch"
+              class="table-search"
+              placeholder="Buscar laboratório..."
+            >
+
+          </div>
+
+
+          <div class="table-wrap">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Laboratório
+                  </th>
+
+                  <th>
+                    Capacidade
+                  </th>
+
+                  <th>
+                    Status
+                  </th>
+
+                  <th>
+                    Localização
+                  </th>
+
+                  <th>
+                    Ações
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody id="labTable">
+
+
+               
+
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </section>
+
+
+      <!-- =====================================================
+           TELA 3 — RESERVAS
+           ===================================================== -->
+
+      <section
+        class="module-page"
+        id="reservas-page"
+        style="display:none"
+      >
+
+
+        <div class="module-toolbar">
+
+          <div>
+
+            <h1>
+              Reservas
+            </h1>
+
+            <p>
+              Visualize, acompanhe e gerencie
+              as reservas dos laboratórios.
+            </p>
+
+          </div>
+
+
+          <div class="toolbar-actions">
+
+            <button
+              class="secondary"
+              onclick="toast('Filtro de reservas selecionado')"
+            >
+              Filtros
+            </button>
+
+            <button
+              class="primary"
+              onclick="openReservationModal()"
+            >
+              ＋ Nova reserva
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- Indicadores -->
+
+        <div class="reservation-summary">
+
+          <div class="card summary-card">
+
+            <span>
+              Reservas hoje
+            </span>
+
+            <strong id="totalReservasHojeSecundario">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="card summary-card">
+
+            <span>
+              Confirmadas
+            </span>
+
+            <strong id="totalConfirmadas">
+              0
+            </strong>
+
+          </div>
+
+
+          <div class="card summary-card">
+
+            <span>
+              Pendentes
+            </span>
+
+            <strong id="totalPendentes">
+              0
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- Tabela de reservas -->
+
+        <section class="card table-card">
+
+          <div class="table-head">
+
+            <h3>
+              Reservas cadastradas
+            </h3>
+
+
+            <div class="reservation-filters">
+
+              <input
+                id="reservationSearch"
+                placeholder="Buscar reserva..."
+              >
+
+
+              <select id="reservationStatus">
+
+                <option value="">
+                  Todos os status
+                </option>
+
+                <option>
+                  Confirmada
+                </option>
+
+                <option>
+                  Pendente
+                </option>
+
+                <option>
+                  Cancelada
+                </option>
+
+              </select>
+
+            </div>
+
+          </div>
+
+
+          <div class="table-wrap">
+
+            <table>
+
+              <thead>
+
+                <tr>
+
+                  <th>
+                    Solicitante
+                  </th>
+
+                  <th>
+                    Laboratório
+                  </th>
+
+                  <th>
+                    Data e horário
+                  </th>
+
+                  <th>
+                    Status
+                  </th>
+
+                  <th>
+                    Ações
+                  </th>
+
+                </tr>
+
+              </thead>
+
+
+              <tbody id="reservationTable">
+
+
+
+
+               
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </section>
+
+      </section>
+
+
+      <!-- =====================================================
+           TELA 4 — DISPONIBILIDADE
+           ===================================================== -->
+
+      <section
+        class="module-page"
+        id="disponibilidade-page"
+        style="display:none"
+      >
+
+
+        <div class="module-toolbar">
+
+          <div>
+
+            <h1>
+              Disponibilidade
+            </h1>
+
+            <p>
+              Consulte quais laboratórios estão
+              livres no período informado.
+            </p>
+
+          </div>
+
+
+          <div class="toolbar-actions">
+
+            <button
+              class="secondary"
+              onclick="toast('Calendário de disponibilidade aberto')"
+            >
+              Calendário
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <div class="availability-hero">
+
+
+          <!-- Formulário -->
+
+          <section class="card availability-form">
+
+            <h3>
+              Consultar disponibilidade
+            </h3>
+
+            <p>
+              Escolha a data e o horário para
+              verificar conflitos de reservas,
+              aulas e manutenção.
+            </p>
+
+
+            <div class="availability-fields">
+
+
+              <div class="availability-field">
+
+                <label>
+                  Data
+                </label>
+
+                <input
+                  type="date"
+                  value="2026-10-07"
+                >
+
+              </div>
+
+
+              <div class="availability-field">
+
+                <label>
+                  Hora inicial
+                </label>
+
+                <input
+                  type="time"
+                  value="09:00"
+                >
+
+              </div>
+
+
+              <div class="availability-field">
+
+                <label>
+                  Hora final
+                </label>
+
+                <input
+                  type="time"
+                  value="10:30"
+                >
+
+              </div>
+
+            </div>
+
+
+            <!-- Seleção do laboratório -->
+
+            <div
+              class="availability-field"
+              style="margin-top:10px"
+            >
+
+              <label>
+                Laboratório
+              </label>
+
+              <select>
+
+                <option>
+                  Todos os laboratórios
+                </option>
+
+                <option>
+                  Laboratório de Informática 01
+                </option>
+
+                <option>
+                  Laboratório de Informática 02
+                </option>
+
+                <option>
+                  Laboratório de Redes
+                </option>
+
+                <option>
+                  Laboratório de Química
+                </option>
+
+                <option>
+                  Laboratório de Eletrônica
+                </option>
+
+              </select>
+
+            </div>
+
+
+            <!-- Botão -->
+
+            <div class="availability-action">
+
+              <button
+                class="primary"
+                onclick="checkAvailability()"
+              >
+
+                Verificar disponibilidade
+
+              </button>
+
+            </div>
+
+          </section>
+
+
+          <!-- Resultado -->
+
+          <section class="card availability-results">
+
+            <div class="availability-results-head">
+
+              <h3>
+                Resultado da consulta
+              </h3>
+
+              <span>
+                07/10 · 09:00–10:30
+              </span>
+
+            </div>
+
+
+            <div class="availability-list">
+
+
+              <div class="availability-item">
+
+                <div>
+
+                  <strong>
+                    Laboratório de Informática 01
+                  </strong>
+
+                  <p>
+                    Capacidade 30 pessoas ·
+                    24 computadores
+                  </p>
+
+                </div>
+
+                <span class="availability-status free">
+                  Disponível
+                </span>
+
+              </div>
+
+
+              <div class="availability-item">
+
+                <div>
+
+                  <strong>
+                    Laboratório de Redes
+                  </strong>
+
+                  <p>
+                    Capacidade 20 pessoas ·
+                    18 máquinas ativas
+                  </p>
+
+                </div>
+
+                <span class="availability-status free">
+                  Disponível
+                </span>
+
+              </div>
+
+
+              <div class="availability-item">
+
+                <div>
+
+                  <strong>
+                    Laboratório de Química
+                  </strong>
+
+                  <p>
+                    Há uma reserva no período consultado
+                  </p>
+
+                </div>
+
+                <span class="availability-status busy">
+                  Ocupado
+                </span>
+
+              </div>
+
+
+              <div class="availability-item">
+
+                <div>
+
+                  <strong>
+                    Laboratório de Eletrônica
+                  </strong>
+
+                  <p>
+                    Manutenção programada para o período
+                  </p>
+
+                </div>
+
+                <span class="availability-status maintenance">
+                  Indisponível
+                </span>
+
+              </div>
+
+
+            </div>
+
+
+            <div class="availability-note">
+
+              A disponibilidade considera reservas,
+              aulas e períodos de manutenção
+              cadastrados no sistema.
+
+            </div>
+
+          </section>
+
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+
+  <!-- =========================================================
+       TOAST
+       Mensagem rápida exibida após ações.
+       ========================================================= -->
+
+  <div
+    id="toast"
+    class="toast"
+  ></div>
+
+
+  <!-- =========================================================
+       MODAL — LABORATÓRIO
+       ========================================================= -->
+
+  <div
+    class="modal-backdrop"
+    id="labModal"
+    onclick="closeLabModal(event)"
+  >
+
+    <div class="modal">
+
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3 id="modalTitle">
+            Novo laboratório
+          </h3>
+
+          <p>
+            Preencha os dados para cadastrar
+            o laboratório.
+          </p>
+
+        </div>
+
+
+        <button
+          class="close-btn"
+          onclick="closeLabModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="form-grid">
+
+
+        <div class="field full">
+
+          <label>
+            Nome do laboratório
+          </label>
+
+          <input
+            id="labNome"
+            placeholder="Ex.: Laboratório de Informática 03"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Capacidade
+          </label>
+
+          <input
+            id="labCapacidade"
+            type="number"
+            placeholder="30"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Status
+          </label>
+
+          <select id="labStatus">
+            <option value="Ativo">Disponível</option>
+            <option value="Manutenção">Manutenção</option>
+            <option value="Inativo">Inativo</option>
+          </select>
+
+        </div>
+
+
+        <div class="field full">
+
+          <label>
+            Localização
+          </label>
+
+          <input
+            id="labLocalizacao"
+            placeholder="Ex.: Bloco A · 2º andar"
+          >
+
+        </div>
+
+
+      </div>
+
+
+      <div class="modal-actions">
+
+
+        <button
+          class="secondary"
+          onclick="closeLabModal()"
+        >
+          Cancelar
+        </button>
+
+
+        <button
+          class="primary"
+          onclick="saveLab()"
+        >
+          Salvar laboratório
+        </button>
+
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- =========================================================
+       MODAL — RESERVA
+       ========================================================= -->
+
+  <div
+    class="modal-backdrop"
+    id="reservationModal"
+    onclick="closeReservationModal(event)"
+  >
+
+    <div class="modal">
+
+
+      <div class="modal-head">
+
+        <div>
+
+          <h3 id="reservationModalTitle">
+            Nova reserva
+          </h3>
+
+          <p>
+            Informe o laboratório,
+            horário e solicitante.
+          </p>
+
+        </div>
+
+
+        <button
+          class="close-btn"
+          onclick="closeReservationModal()"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      
+        
+    <div class="form-grid">
+
+      <div class="field full">
+        <label for="resLaboratorio">Laboratório</label>
+        <select id="resLaboratorio" required>
+          <option value="">Carregando laboratórios...</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="resData">Data</label>
+        <input id="resData" type="date" required>
+      </div>
+
+      <div class="field">
+        <label for="resUsuario">ID do solicitante</label>
+        <input
+          id="resUsuario"
+          type="number"
+          min="1"
+          placeholder="ID do usuário"
+          required
+        >
+      </div>
+
+      <div class="field">
+        <label for="resHoraInicio">Hora inicial</label>
+        <input id="resHoraInicio" type="time" value="09:00" required>
+      </div>
+
+      <div class="field">
+        <label for="resHoraFim">Hora final</label>
+        <input id="resHoraFim" type="time" value="10:30" required>
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+      <button
+        class="secondary"
+        onclick="closeReservationModal()"
+      >
+        Cancelar
+      </button>
+
+      <button
+        class="primary"
+        onclick="saveReservation()"
+      >
+        Salvar reserva
+      </button>
+    </div>
+    
+
+
+  </div>
+
+
+  <script>
+
+
+    /* =========================================================
+       NAVEGAÇÃO
+       Troca entre Dashboard, Laboratórios,
+       Reservas e Disponibilidade.
+       ========================================================= */
+
+    const buttons =
+      [...document.querySelectorAll('.nav button')];
+
+
+    const crumb =
+      document.getElementById('crumb');
+
+
+    const dashboard =
+      document.getElementById(
+        'dashboard-content'
+      );
+
+
+    const labsPage =
+      document.getElementById(
+        'laboratorios-page'
+      );
+
+
+    const reservationsPage =
+      document.getElementById(
+        'reservas-page'
+      );
+
+
+    const availabilityPage =
+      document.getElementById(
+        'disponibilidade-page'
+      );
+
+
+    buttons.forEach(btn => {
+
+      btn.addEventListener(
+        'click',
+        () => {
+
+
+          /* Remove o destaque dos outros botões */
+
+          buttons.forEach(b =>
+            b.classList.remove('active')
+          );
+
+
+          /* Destaca o botão selecionado */
+
+          btn.classList.add('active');
+
+
+          const page =
+            btn.dataset.page;
+
+
+          /* Atualiza o breadcrumb */
+
+          crumb.textContent =
+            page;
+
+
+          /* Descobre qual página foi selecionada */
+
+          const isLabs =
+            page === 'Laboratórios';
+
+
+          const isReservations =
+            page === 'Reservas';
+
+
+          const isAvailability =
+            page === 'Disponibilidade';
+
+
+          /* Dashboard fica escondido nas
+             outras páginas */
+
+          dashboard.classList.toggle(
+            'module-hidden',
+            isLabs ||
+            isReservations ||
+            isAvailability
+          );
+
+
+          /* Mostra Laboratórios */
+
+          labsPage.style.display =
+            isLabs
+              ? 'block'
+              : 'none';
+
+
+          /* Mostra Reservas */
+
+          reservationsPage.style.display =
+            isReservations
+              ? 'block'
+              : 'none';
+
+
+          /* Mostra Disponibilidade */
+
+          availabilityPage.style.display =
+            isAvailability
+              ? 'block'
+              : 'none';
+
+
+          /* Mensagem */
+
+          toast(
+            page === 'Visão geral'
+              ? 'Painel carregado'
+              : 'Módulo ' +
+                page +
+                ' selecionado'
+          );
+
+        }
+      );
+
+    });
+
+
+    /* =========================================================
+       BUSCA DO DASHBOARD
+       Filtra os laboratórios exibidos
+       no painel inicial.
+       ========================================================= */
+
+    const search =
+      document.getElementById(
+        'search'
+      );
+
+
+    search.addEventListener(
+      'input',
+      () => {
+
+
+        const q =
+          search.value
+            .trim()
+            .toLowerCase();
+
+
+        document
+          .querySelectorAll(
+            '#labs .lab'
+          )
+          .forEach(el => {
+
+
+            el.style.display =
+              !q ||
+              el.innerText
+                .toLowerCase()
+                .includes(q)
+                ? 'grid'
+                : 'none';
+
+          });
+
+      }
+    );
+
+
+    /* =========================================================
+       BUSCA DE LABORATÓRIOS
+       ========================================================= */
+
+    const labSearch =
+      document.getElementById(
+        'labSearch'
+      );
+
+
+    labSearch.addEventListener(
+      'input',
+      () => {
+
+
+        const q =
+          labSearch.value
+            .trim()
+            .toLowerCase();
+
+
+        document
+          .querySelectorAll(
+            '#labTable tr'
+          )
+          .forEach(row => {
+
+
+            row.style.display =
+              !q ||
+              row.innerText
+                .toLowerCase()
+                .includes(q)
+                ? ''
+                : 'none';
+
+          });
+
+      }
+    );
+
+
+    /* =========================================================
+       MODAL DE LABORATÓRIO
+       Abre e fecha a janela de cadastro/edição.
+       ========================================================= */
+
+
+
+      let laboratorioEmEdicao = null;
+
+      function openLabModal(title = 'Novo laboratório', laboratorio = null) {
+        laboratorioEmEdicao = laboratorio;
+
+        document.getElementById('modalTitle').textContent = title;
+
+        document.getElementById('labNome').value =
+          laboratorio ? laboratorio.nome : '';
+
+        document.getElementById('labCapacidade').value =
+          laboratorio ? laboratorio.capacidade : '';
+
+        document.getElementById('labStatus').value =
+          laboratorio ? laboratorio.status : 'Ativo';
+
+        document.getElementById('labLocalizacao').value =
+          laboratorio ? laboratorio.localizacao : '';
+
+        document.getElementById('labModal').classList.add('show');
+      }
+
+
+
+
+    function closeLabModal(
+      event
+    ) {
+
+
+      if (
+        event &&
+        event.target !==
+        document.getElementById(
+          'labModal'
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        'labModal'
+      ).classList.remove(
+        'show'
+      );
+
+    }
+
+
+    /* Simulação do salvamento */
+
+    
+    async function saveLab() {
+      const nome = document.getElementById('labNome').value.trim();
+      const capacidade = Number(document.getElementById('labCapacidade').value);
+      const status = document.getElementById('labStatus').value;
+      const localizacao = document.getElementById('labLocalizacao').value.trim();
+
+      if (!nome || !localizacao || !capacidade || capacidade < 1) {
+        toast('Preencha todos os campos corretamente.');
+        return;
+      }
+
+      const dados = {
+        nome: nome,
+        capacidade: capacidade,
+        status: status,
+        localizacao: localizacao
+      };
+
+      const editando = laboratorioEmEdicao !== null;
+
+      const url = editando
+        ? `/laboratorios/${laboratorioEmEdicao.idLaboratorio}`
+        : '/laboratorios/';
+
+      const metodo = editando ? 'PUT' : 'POST';
+
+      try {
+        const resposta = await fetch(url, {
+          method: metodo,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dados)
+        });
+
+        if (!resposta.ok) {
+          const erro = await resposta.json();
+          throw new Error(
+            erro.detail || 'Não foi possível salvar o laboratório.'
+          );
+        }
+
+        closeLabModal();
+        laboratorioEmEdicao = null;
+
+        await carregarLaboratorios();
+
+        toast(
+          editando
+            ? 'Laboratório atualizado com sucesso!'
+            : 'Laboratório cadastrado com sucesso!'
+        );
+
+      } catch (erro) {
+        console.error(erro);
+        toast(erro.message || 'Erro ao conectar com a API.');
+      }
+    }
+
+
+
+
+    /*função de exclusão*/
+
+    
+    async function excluirLaboratorio(id, nome) {
+      const confirmado = confirm(
+        `Tem certeza de que deseja excluir o laboratório "${nome}"?`
+      );
+
+      if (!confirmado) {
+        return;
+      }
+
+      try {
+        const resposta = await fetch(`/laboratorios/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!resposta.ok) {
+          const erro = await resposta.json();
+          throw new Error(
+            erro.detail || 'Não foi possível excluir o laboratório.'
+          );
+        }
+
+        await carregarLaboratorios();
+        toast('Laboratório excluído com sucesso!');
+
+      } catch (erro) {
+        console.error(erro);
+        toast(erro.message || 'Erro ao excluir laboratório.');
+      }
+    }
+
+
+    /* =========================================================
+       FILTROS DE RESERVAS
+       ========================================================= */
+
+    const reservationSearch =
+      document.getElementById(
+        'reservationSearch'
+      );
+
+
+    const reservationStatus =
+      document.getElementById(
+        'reservationStatus'
+      );
+
+
+    function filterReservations() {
+
+
+      const q =
+        reservationSearch.value
+          .trim()
+          .toLowerCase();
+
+
+      const status =
+        reservationStatus.value
+          .toLowerCase();
+
+
+      document
+        .querySelectorAll(
+          '#reservationTable tr'
+        )
+        .forEach(row => {
+
+
+          const text =
+            row.innerText
+              .toLowerCase();
+
+
+          const matchesText =
+            !q ||
+            text.includes(q);
+
+
+          const matchesStatus =
+            !status ||
+            text.includes(status);
+
+
+          row.style.display =
+            matchesText &&
+            matchesStatus
+              ? ''
+              : 'none';
+
+        });
+
+    }
+
+
+    reservationSearch.addEventListener(
+      'input',
+      filterReservations
+    );
+
+
+    reservationStatus.addEventListener(
+      'change',
+      filterReservations
+    );
+
+
+    /* =========================================================
+       MODAL DE RESERVA
+       ========================================================= */
+
+
+    function openReservationModal(title = 'Nova reserva') {
+      // Inicia o modo de cadastro.
+      reservaEmEdicao = null;
+
+      // Atualiza o título.
+      document.getElementById('reservationModalTitle').textContent =
+        title;
+
+      // Limpa os campos para uma nova reserva.
+      document.getElementById('resLaboratorio').value = '';
+      document.getElementById('resData').value = '';
+      document.getElementById('resUsuario').value = '';
+      document.getElementById('resHoraInicio').value = '09:00';
+      document.getElementById('resHoraFim').value = '10:30';
+
+      // Abre o modal usando a classe já existente.
+      document.getElementById('reservationModal').classList.add('show');
+    }
+
+
+
+    function closeReservationModal(
+      event
+    ) {
+
+
+      if (
+        event &&
+        event.target !==
+        document.getElementById(
+          'reservationModal'
+        )
+      ) {
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        'reservationModal'
+      ).classList.remove(
+        'show'
+      );
+
+    }
+
+
+    /* Simulação do salvamento */
+    
+    let reservaEmEdicao = null;
+
+    async function saveReservation() {
+      const idLaboratorio = document.getElementById('resLaboratorio').value;
+      const data = document.getElementById('resData').value;
+      const idUsuario = document.getElementById('resUsuario').value;
+      const horaInicio = document.getElementById('resHoraInicio').value;
+      const horaFim = document.getElementById('resHoraFim').value;
+
+      if (!idLaboratorio || !data || !idUsuario || !horaInicio || !horaFim) {
+        toast('Preencha todos os campos da reserva.');
+        return;
+      }
+
+      if (horaFim <= horaInicio) {
+        toast('A hora final deve ser posterior à hora inicial.');
+        return;
+      }
+
+      // Verifica se estamos cadastrando ou editando.
+      const editando = reservaEmEdicao !== null;
+
+      // Escolhe a rota e o método conforme a operação.
+      const url = editando
+        ? `/gerenciar-reservas/${reservaEmEdicao}`
+        : '/reservas/';
+
+      const metodo = editando ? 'PUT' : 'POST';
+
+      // Os campos comuns às duas operações.
+      const dadosReserva = {
+        idLaboratorio: Number(idLaboratorio),
+        data: data,
+        horaInicio: horaInicio,
+        horaFim: horaFim
+      };
+
+      // O cadastro precisa informar o solicitante.
+      // A edição atualiza os campos aceitos por ReservaUpdate.
+      if (!editando) {
+        dadosReserva.idUsuario = Number(idUsuario);
+      }
+
+      try {
+        const resposta = await fetch(url, {
+          method: metodo,
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(dadosReserva)
+        });
+
+        const resultado = await resposta.json();
+
+        if (!resposta.ok) {
+          const mensagem =
+            resultado.detail ||
+            'Não foi possível salvar a reserva.';
+
+          toast(mensagem);
+          return;
+        }
+
+        toast(
+          editando
+            ? 'Reserva atualizada com sucesso!'
+            : 'Reserva criada com sucesso!'
+        );
+
+        closeReservationModal();
+
+        // Atualiza a tabela e os indicadores.
+        await carregarReservas();
+
+      } catch (erro) {
+        console.error('Erro ao salvar reserva:', erro);
+        toast('Erro de conexão ao tentar salvar a reserva.');
+      }
+    }
+
+    
+
+
+    /* =========================================================
+       DISPONIBILIDADE
+       Simula a consulta de disponibilidade.
+       Mais tarde poderá ser conectada à API.
+       ========================================================= */
+
+    function checkAvailability() {
+
+      toast(
+        'Disponibilidade verificada no layout'
+      );
+
+    }
+
+
+    /* =========================================================
+       TOAST
+       Exibe mensagens temporárias.
+       ========================================================= */
+
+    let toastTimer;
+
+
+    function toast(message) {
+
+
+      const el =
+        document.getElementById(
+          'toast'
+        );
+
+
+      el.textContent =
+        message;
+
+
+      el.classList.add(
+        'show'
+      );
+
+
+      clearTimeout(
+        toastTimer
+      );
+
+
+      toastTimer =
+        setTimeout(
+          () =>
+            el.classList.remove(
+              'show'
+            ),
+          1800
+        );
+
+      }
+            
+      async function carregarLaboratorios() {
+        const tabela = document.getElementById('labTable');
+        const seletorReserva = document.getElementById('resLaboratorio');
+
+        try {
+          const resposta = await fetch('/laboratorios/');
+
+          if (!resposta.ok) {
+            throw new Error('Não foi possível consultar os laboratórios.');
+          }
+
+          const laboratorios = await resposta.json();
+
+            if (seletorReserva) {
+            seletorReserva.innerHTML =
+              '<option value="">Selecione um laboratório</option>';
+
+            laboratorios
+              .filter(lab => lab.status === 'Ativo')
+              .forEach(lab => {
+                const opcao = document.createElement('option');
+                opcao.value = lab.idLaboratorio;
+                opcao.textContent = lab.nome;
+                seletorReserva.appendChild(opcao);
+              });
+          }
+          const totalLaboratorios = laboratorios.length;
+
+          const laboratoriosDisponiveis = laboratorios.filter(
+            lab => lab.status === 'Ativo'
+          ).length;
+
+          const laboratoriosManutencao = laboratorios.filter(
+            lab => lab.status === 'Manutenção'
+          ).length;
+
+          document.getElementById('totalLaboratorios').textContent =
+            totalLaboratorios;
+
+          document.getElementById('laboratoriosDisponiveis').textContent =
+            laboratoriosDisponiveis;
+
+          document.getElementById('laboratoriosManutencao').textContent =
+            laboratoriosManutencao;
+
+          document.getElementById('dashboardTotalLaboratorios').textContent =
+            totalLaboratorios;
+
+          document.getElementById('dashboardLaboratoriosDisponiveis').textContent =
+            `${laboratoriosDisponiveis} disponíveis no momento`;
+
+          document.getElementById('dashboardLaboratoriosManutencao').textContent =
+            laboratoriosManutencao;
+
+          tabela.innerHTML = '';
+
+          if (laboratorios.length === 0) {
+            tabela.innerHTML = `
+              <tr>
+                <td colspan="5">Nenhum laboratório cadastrado.</td>
+              </tr>
+            `;
+            return;
+          }
+
+          const listaLabs = document.getElementById('labs');
+          listaLabs.innerHTML = '';
+
+          laboratorios.forEach(lab => {
+            const linha = document.createElement('tr');
+
+            const listaLabs = document.getElementById('labs');
+
+            const itemLab = document.createElement('div');
+
+            
+
+            const statusClasse = {
+              'Ativo': 'available',
+              'Inativo': 'busy',
+              'Manutenção': 'maint'
+            };
+
+            itemLab.className = `lab ${statusClasse[lab.status] || 'busy'}`;
+
+            itemLab.innerHTML = `
+              <div>
+                <div class="lab-title">
+                  <span class="dot"></span>
+                  <strong>${lab.nome}</strong>
+                </div>
+                <div class="lab-meta">
+                  Capacidade ${lab.capacidade} pessoas · ${lab.localizacao}
+                </div>
+              </div>
+              <span class="tag">${lab.status}</span>
+            `;
+
+            listaLabs.appendChild(itemLab);
+
+            linha.innerHTML = `
+              <td>
+                <div class="lab-name">${lab.nome}</div>
+                <div class="lab-detail">${lab.capacidade} pessoas de capacidade</div>
+              </td>
+              <td>${lab.capacidade} pessoas</td>
+              <td>
+                <span class="tag available">${lab.status}</span>
+              </td>
+              <td>${lab.localizacao}</td>
+              <td>
+                <div class="actions">
+                  <button class="row-btn" onclick="toast('Laboratório: ${lab.nome}')">
+                    Ver
+                  </button>
+                  <button class="row-btn" id="editarLab-${lab.idLaboratorio}">
+                    Editar
+                  </button>
+                  <button class="row-btn" id="excluirLab-${lab.idLaboratorio}">
+                    Excluir
+                  </button>
+                </div>
+              </td>
+            `;
+
+
+            tabela.appendChild(linha);
+
+            linha.querySelector(`#editarLab-${lab.idLaboratorio}`)
+              .addEventListener('click', () => {
+                openLabModal('Editar laboratório', lab);
+              });
+
+            linha.querySelector(`#excluirLab-${lab.idLaboratorio}`)
+              .addEventListener('click', () => {
+                excluirLaboratorio(lab.idLaboratorio, lab.nome);
+              });
+
+            });
+
+
+        } catch (erro) {
+          console.error(erro);
+          toast('Erro ao carregar laboratórios da API.');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', carregarLaboratorios);
+
+
+      
+      async function cancelarReserva(idReserva) {
+        const confirmar = confirm(
+          'Tem certeza que deseja cancelar esta reserva?'
+        );
+
+        if (!confirmar) {
+          return;
+        }
+
+        try {
+          const resposta = await fetch(
+            `/gerenciar-reservas/${idReserva}`,
+            {
+              method: 'DELETE'
+            }
+          );
+
+          if (!resposta.ok) {
+            const erro = await resposta.json();
+            throw new Error(
+              erro.detail || 'Não foi possível cancelar a reserva.'
+            );
+          }
+
+          toast('Reserva cancelada com sucesso.');
+
+          await carregarReservas();
+
+        } catch (erro) {
+          console.error('Erro ao cancelar reserva:', erro);
+          toast(erro.message || 'Erro ao cancelar a reserva.');
+        }
+      }
+
+      
+      async function editarReserva(idReserva) {
+        try {
+          const resposta = await fetch(
+            `/gerenciar-reservas/${idReserva}`
+          );
+
+          if (!resposta.ok) {
+            throw new Error('Não foi possível consultar a reserva.');
+          }
+
+          const reserva = await resposta.json();
+
+          // Guarda o ID para que saveReservation saiba que é uma edição.
+          reservaEmEdicao = reserva.idReserva;
+
+          // Preenche o formulário com os dados atuais.
+          document.getElementById('resLaboratorio').value =
+            reserva.idLaboratorio;
+
+          document.getElementById('resData').value =
+            reserva.data;
+
+          document.getElementById('resUsuario').value =
+            reserva.idUsuario;
+
+          document.getElementById('resHoraInicio').value =
+            reserva.horaInicio.substring(0, 5);
+
+          document.getElementById('resHoraFim').value =
+            reserva.horaFim.substring(0, 5);
+
+          // Atualiza o título do modal.
+          document.getElementById('reservationModalTitle').textContent =
+            'Editar reserva';
+
+          // Abre o modal existente.
+          document.getElementById('reservationModal').classList.add('show');
+
+        } catch (erro) {
+          console.error('Erro ao consultar reserva:', erro);
+          toast(erro.message || 'Erro ao abrir a reserva para edição.');
+        }
+      }
+
+
+      async function carregarReservas() {
+        const tabela = document.getElementById('reservationTable');
+
+        try {
+
+          const resposta = await fetch('/gerenciar-reservas/');
+
+          if (!resposta.ok) {
+            throw new Error('Não foi possível consultar as reservas.');
+          }
+
+          const reservas = await resposta.json();
+
+  
+          const hoje = new Date();
+          const dataHoje = [
+            hoje.getFullYear(),
+            String(hoje.getMonth() + 1).padStart(2, '0'),
+            String(hoje.getDate()).padStart(2, '0')
+          ].join('-');
+
+
+          
+
+          const reservasHoje = reservas.filter(reserva =>
+            reserva.data === dataHoje &&
+            reserva.status === 'Ativa'
+          ).length;
+
+          
+
+          const totalConfirmadas = reservas.filter(reserva =>
+            reserva.status === 'Ativa'
+          ).length;
+
+          const totalPendentes = reservas.filter(reserva =>
+            reserva.status === 'Pendente'
+          ).length;
+
+          document.getElementById('totalReservasHoje').textContent = reservasHoje;
+          document.getElementById('totalReservasHojeSecundario').textContent = reservasHoje;
+          document.getElementById('totalConfirmadas').textContent = totalConfirmadas;
+          document.getElementById('totalPendentes').textContent = totalPendentes;
+
+
+          const respostaLaboratorios = await fetch('/laboratorios/');
+
+          if (!respostaLaboratorios.ok) {
+            throw new Error('Não foi possível consultar os laboratórios.');
+          }
+
+          const laboratorios = await respostaLaboratorios.json();
+
+          const nomesLaboratorios = {};
+
+          laboratorios.forEach(lab => {
+            nomesLaboratorios[lab.idLaboratorio] = lab.nome;
+          });
+
+          tabela.innerHTML = '';
+
+          if (reservas.length === 0) {
+            tabela.innerHTML = `
+              <tr>
+                <td colspan="5">Nenhuma reserva cadastrada.</td>
+              </tr>
+            `;
+            return;
+          }
+
+          
+          reservas.forEach(reserva => {
+            const linha = document.createElement('tr');
+
+            const dataFormatada = reserva.data.split('-').reverse().join('/');
+            const horaInicio = reserva.horaInicio.substring(0, 5);
+            const horaFim = reserva.horaFim.substring(0, 5);
+
+            const nomeLaboratorio =
+              nomesLaboratorios[reserva.idLaboratorio] ||
+              `Laboratório #${reserva.idLaboratorio}`;
+
+            const statusExibido =
+              reserva.status === 'Ativa' ? 'Confirmada' : reserva.status;
+
+            linha.innerHTML = `
+              <td>Usuário #${reserva.idUsuario}</td>
+              <td>${nomeLaboratorio}</td>
+              <td>${dataFormatada}, ${horaInicio}–${horaFim}</td>
+              <td>${statusExibido}</td>
+              <td>
+
+                ${
+                  reserva.status === 'Ativa'
+                    ? `
+                      <button
+                        class="row-btn"
+                        onclick="editarReserva(${reserva.idReserva})">
+                        Editar
+                      </button>
+
+                      <button
+                        class="row-btn"
+                        id="cancelarReserva-${reserva.idReserva}">
+                        Cancelar
+                      </button>
+                    `
+                    : '—'
+                }
+
+              </td>
+            `;
+
+            tabela.appendChild(linha);
+          
+
+              if (reserva.status === 'Ativa') {
+              linha
+                .querySelector(`#cancelarReserva-${reserva.idReserva}`)
+                .addEventListener('click', () => {
+                  cancelarReserva(reserva.idReserva);
+                });
+            }
+          });
+
+        } catch (erro) {
+          console.error('Erro ao carregar reservas:', erro);
+          toast('Erro ao carregar as reservas.');
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', carregarReservas);
+    </script>
+
+  </body>
+
+</html>
