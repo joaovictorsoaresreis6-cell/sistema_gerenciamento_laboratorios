@@ -2942,7 +2942,7 @@
 
                 <input
                   type="date"
-                  value="2026-10-07"
+                  id="availabilityDate"
                 >
 
               </div>
@@ -2956,6 +2956,7 @@
 
                 <input
                   type="time"
+                  id="availabilityStart"
                   value="09:00"
                 >
 
@@ -2970,6 +2971,7 @@
 
                 <input
                   type="time"
+                  id="availabilityEnd"
                   value="10:30"
                 >
 
@@ -2978,48 +2980,7 @@
             </div>
 
 
-            <!-- Seleção do laboratório -->
-
-            <div
-              class="availability-field"
-              style="margin-top:10px"
-            >
-
-              <label>
-                Laboratório
-              </label>
-
-              <select>
-
-                <option>
-                  Todos os laboratórios
-                </option>
-
-                <option>
-                  Laboratório de Informática 01
-                </option>
-
-                <option>
-                  Laboratório de Informática 02
-                </option>
-
-                <option>
-                  Laboratório de Redes
-                </option>
-
-                <option>
-                  Laboratório de Química
-                </option>
-
-                <option>
-                  Laboratório de Eletrônica
-                </option>
-
-              </select>
-
-            </div>
-
-
+            
             <!-- Botão -->
 
             <div class="availability-action">
@@ -3048,104 +3009,20 @@
                 Resultado da consulta
               </h3>
 
-              <span>
-                07/10 · 09:00–10:30
+              <span id="availabilityPeriod">
+                Aguardando consulta
               </span>
 
             </div>
 
 
-            <div class="availability-list">
+            <div class="availability-list" id="availabilityList">
 
-
-              <div class="availability-item">
-
-                <div>
-
-                  <strong>
-                    Laboratório de Informática 01
-                  </strong>
-
-                  <p>
-                    Capacidade 30 pessoas ·
-                    24 computadores
-                  </p>
-
-                </div>
-
-                <span class="availability-status free">
-                  Disponível
-                </span>
-
-              </div>
-
-
-              <div class="availability-item">
-
-                <div>
-
-                  <strong>
-                    Laboratório de Redes
-                  </strong>
-
-                  <p>
-                    Capacidade 20 pessoas ·
-                    18 máquinas ativas
-                  </p>
-
-                </div>
-
-                <span class="availability-status free">
-                  Disponível
-                </span>
-
-              </div>
-
-
-              <div class="availability-item">
-
-                <div>
-
-                  <strong>
-                    Laboratório de Química
-                  </strong>
-
-                  <p>
-                    Há uma reserva no período consultado
-                  </p>
-
-                </div>
-
-                <span class="availability-status busy">
-                  Ocupado
-                </span>
-
-              </div>
-
-
-              <div class="availability-item">
-
-                <div>
-
-                  <strong>
-                    Laboratório de Eletrônica
-                  </strong>
-
-                  <p>
-                    Manutenção programada para o período
-                  </p>
-
-                </div>
-
-                <span class="availability-status maintenance">
-                  Indisponível
-                </span>
-
-              </div>
-
+              <p>
+                Informe uma data e um horário para consultar os laboratórios disponíveis.
+              </p>
 
             </div>
-
 
             <div class="availability-note">
 
@@ -4003,13 +3880,91 @@
        Mais tarde poderá ser conectada à API.
        ========================================================= */
 
-    function checkAvailability() {
+        async function checkAvailability() {
 
-      toast(
-        'Disponibilidade verificada no layout'
-      );
+          const data = document.getElementById('availabilityDate').value;
+          const horaInicio = document.getElementById('availabilityStart').value;
+          const horaFim = document.getElementById('availabilityEnd').value;
 
-    }
+          if (!data || !horaInicio || !horaFim) {
+            toast('Preencha a data e os horários.');
+            return;
+          }
+
+          if (horaFim <= horaInicio) {
+            toast('O horário final deve ser posterior ao inicial.');
+            return;
+          }
+
+          const lista = document.getElementById('availabilityList');
+          const periodo = document.getElementById('availabilityPeriod');
+
+          lista.innerHTML = '<p>Consultando disponibilidade...</p>';
+
+          try {
+
+            const resposta = await fetch('/disponibilidade/', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                data: data,
+                horaInicio: horaInicio,
+                horaFim: horaFim
+              })
+            });
+
+            const resultado = await resposta.json();
+
+            if (!resposta.ok) {
+              throw new Error(resultado.detail || 'Erro ao consultar disponibilidade.');
+            }
+
+            periodo.textContent = `${data} · ${horaInicio}–${horaFim}`;
+
+            const laboratorios = resultado.laboratoriosDisponiveis;
+
+            if (!laboratorios || laboratorios.length === 0) {
+              lista.innerHTML = '<p>Nenhum laboratório disponível para o período selecionado.</p>';
+              return;
+            }
+
+            lista.innerHTML = '';
+
+            laboratorios.forEach(laboratorio => {
+
+              const item = document.createElement('div');
+              item.className = 'availability-item';
+
+              const nome = document.createElement('strong');
+              nome.textContent = laboratorio.nome;
+
+              const detalhes = document.createElement('p');
+              detalhes.textContent =
+                `Localização: ${laboratorio.localizacao} | Capacidade: ${laboratorio.capacidade} pessoas`;
+
+              const status = document.createElement('span');
+              status.className = 'availability-status';
+              status.textContent = 'Disponível';
+
+              item.appendChild(nome);
+              item.appendChild(detalhes);
+              item.appendChild(status);
+
+              lista.appendChild(item);
+
+            });
+
+          } catch (erro) {
+
+            console.error('Erro na consulta:', erro);
+            lista.innerHTML = '<p>Não foi possível consultar a disponibilidade.</p>';
+            toast(erro.message);
+
+          }
+
+        }
 
 
     /* =========================================================
