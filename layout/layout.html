@@ -2144,29 +2144,7 @@
           </div>
 
 
-          <div class="card stat">
 
-            <div class="stat-top">
-
-              <span class="stat-label">
-                Computadores
-              </span>
-
-              <span class="stat-icon">
-                ▤
-              </span>
-
-            </div>
-
-            <h2>
-              86
-            </h2>
-
-            <span class="delta good">
-              79 disponíveis
-            </span>
-
-          </div>
 
         </div>
 
@@ -2214,115 +2192,27 @@
 
           <!-- Aulas -->
 
+
           <section class="card panel">
 
             <div class="panel-head">
 
               <h3>
-                Aulas de hoje
+                Agenda de hoje
               </h3>
-
-              <button
-                onclick="toast('Agenda de aulas selecionada')"
-              >
-                Agenda
-              </button>
 
             </div>
 
+            <div class="agenda" id="dashboardAgendaHoje">
 
-            <div class="agenda">
-
-
-              <div class="event">
-
-                <div class="time">
-                  08:00
-                </div>
-
-                <div class="event-body">
-
-                  <strong>
-                    Aula prática de Redes
-                  </strong>
-
-                  <div>
-                    Lab. de Redes · 18 alunos
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div class="event">
-
-                <div class="time">
-                  10:30
-                </div>
-
-                <div class="event-body">
-
-                  <strong>
-                    Projeto de extensão
-                  </strong>
-
-                  <div>
-                    Informática 01 · 12 alunos
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div class="event">
-
-                <div class="time">
-                  14:00
-                </div>
-
-                <div class="event-body">
-
-                  <strong>
-                    Laboratório de Química
-                  </strong>
-
-                  <div>
-                    Turma 2B · 21 alunos
-                  </div>
-
-                </div>
-
-              </div>
-
-
-              <div class="event">
-
-                <div class="time">
-                  16:30
-                </div>
-
-                <div class="event-body">
-
-                  <strong>
-                    Treinamento interno
-                  </strong>
-
-                  <div>
-                    Informática 02 · 10 pessoas
-                  </div>
-
-                </div>
-
-              </div>
-
+              <p>
+                Carregando agenda...
+              </p>
 
             </div>
 
           </section>
 
-        </div>
 
 
         <!-- Parte inferior -->
@@ -2332,99 +2222,7 @@
 
           <!-- Ocupação -->
 
-          <section class="card panel">
-
-            <div class="panel-head">
-
-              <h3>
-                Ocupação por categoria
-              </h3>
-
-              <button
-                onclick="toast('Relatório de ocupação aberto')"
-              >
-                Relatório
-              </button>
-
-            </div>
-
-
-            <div class="progress-wrap">
-
-              <div class="progress-meta">
-                <span>Informática</span>
-                <span>86%</span>
-              </div>
-
-              <div class="bar">
-
-                <div
-                  class="fill"
-                  style="width:86%"
-                ></div>
-
-              </div>
-
-            </div>
-
-
-            <div class="progress-wrap">
-
-              <div class="progress-meta">
-                <span>Química</span>
-                <span>72%</span>
-              </div>
-
-              <div class="bar">
-
-                <div
-                  class="fill"
-                  style="width:72%"
-                ></div>
-
-              </div>
-
-            </div>
-
-
-            <div class="progress-wrap">
-
-              <div class="progress-meta">
-                <span>Redes</span>
-                <span>64%</span>
-              </div>
-
-              <div class="bar">
-
-                <div
-                  class="fill"
-                  style="width:64%"
-                ></div>
-
-              </div>
-
-            </div>
-
-
-            <div class="progress-wrap">
-
-              <div class="progress-meta">
-                <span>Eletrônica</span>
-                <span>48%</span>
-              </div>
-
-              <div class="bar">
-
-                <div
-                  class="fill"
-                  style="width:48%"
-                ></div>
-
-              </div>
-
-            </div>
-
-          </section>
+          
 
 
           <!-- Reservas recentes -->
@@ -2446,73 +2244,12 @@
             </div>
 
 
-            <div class="reservation-list">
-
-
-              <div class="res">
-
-                <div>
-
-                  <strong>
-                    Mariana Costa
-                  </strong>
-
-                  <div>
-                    Lab. de Redes · 09:00
-                  </div>
-
-                </div>
-
-                <span class="status ok">
-                  Confirmada
-                </span>
-
-              </div>
-
-
-              <div class="res">
-
-                <div>
-
-                  <strong>
-                    Lucas Almeida
-                  </strong>
-
-                  <div>
-                    Informática 01 · 11:00
-                  </div>
-
-                </div>
-
-                <span class="status ok">
-                  Confirmada
-                </span>
-
-              </div>
-
-
-              <div class="res">
-
-                <div>
-
-                  <strong>
-                    Beatriz Santos
-                  </strong>
-
-                  <div>
-                    Lab. de Química · 15:00
-                  </div>
-
-                </div>
-
-                <span class="status pending">
-                  Pendente
-                </span>
-
-              </div>
-
-
+            <div id="dashboardReservasRecentes">
+              <p>Carregando reservas...</p>
             </div>
+
+
+            
 
           </section>
 
@@ -3261,25 +2998,25 @@
 
     </div>
 
-    <div class="modal-actions">
-      <button
-        class="secondary"
-        onclick="closeReservationModal()"
-      >
-        Cancelar
-      </button>
+          <div class="modal-actions">
+        <button
+          class="secondary"
+          onclick="closeReservationModal()"
+        >
+          Cancelar
+        </button>
 
-      <button
-        class="primary"
-        onclick="saveReservation()"
-      >
-        Salvar reserva
-      </button>
-    </div>
-    
+        <button
+          class="primary"
+          onclick="saveReservation()"
+        >
+          Salvar reserva
+        </button>
+      </div>
 
+    </div> <!-- fecha .modal -->
 
-  </div>
+  </div> <!-- fecha .modal-backdrop -->
 
 
   <script>
@@ -4298,6 +4035,121 @@
           laboratorios.forEach(lab => {
             nomesLaboratorios[lab.idLaboratorio] = lab.nome;
           });
+
+
+          const recentes = [...reservas]
+            .sort((a, b) => {
+              const dataA = `${a.data} ${a.horaInicio}`;
+              const dataB = `${b.data} ${b.horaInicio}`;
+              return dataB.localeCompare(dataA);
+            })
+            .slice(0, 3);
+
+          const containerRecentes = document.getElementById(
+            'dashboardReservasRecentes'
+          );
+
+          if (containerRecentes) {
+            if (recentes.length === 0) {
+              containerRecentes.innerHTML =
+                '<p>Nenhuma reserva cadastrada.</p>';
+            } else {
+              containerRecentes.innerHTML = '';
+
+              recentes.forEach(reserva => {
+                const item = document.createElement('div');
+                item.className = 'res';
+
+                const nomeLaboratorio =
+                  nomesLaboratorios[reserva.idLaboratorio] ||
+                  `Laboratório #${reserva.idLaboratorio}`;
+
+                const dataFormatada = reserva.data.split('-').reverse().join('/');
+                const horaInicio = reserva.horaInicio.substring(0, 5);
+
+                const detalhes = document.createElement('div');
+
+                const titulo = document.createElement('strong');
+                titulo.textContent = nomeLaboratorio;
+
+                const informacao = document.createElement('div');
+                informacao.textContent =
+                  `${dataFormatada} · ${horaInicio} · Usuário #${reserva.idUsuario}`;
+
+                detalhes.appendChild(titulo);
+                detalhes.appendChild(informacao);
+
+                const status = document.createElement('span');
+                status.className =
+                  reserva.status === 'Ativa' ? 'status ok' : 'status';
+
+                status.textContent = reserva.status;
+
+                item.appendChild(detalhes);
+                item.appendChild(status);
+
+                containerRecentes.appendChild(item);
+
+
+
+                // Agenda de hoje
+                const agendaHoje = document.getElementById('dashboardAgendaHoje');
+
+                if (agendaHoje) {
+                  const agora = new Date();
+
+                  const hoje =
+                    `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, '0')}-${String(agora.getDate()).padStart(2, '0')}`;
+
+                  const reservasHoje = reservas
+                    .filter(reserva =>
+                      reserva.data === hoje &&
+                      reserva.status === 'Ativa'
+                    )
+                    .sort((a, b) =>
+                      a.horaInicio.localeCompare(b.horaInicio)
+                    );
+
+                  agendaHoje.innerHTML = '';
+
+                  if (reservasHoje.length === 0) {
+                    agendaHoje.textContent = 'Não existem reservas ativas para hoje.';
+                  } else {
+                    reservasHoje.forEach(reserva => {
+                      const evento = document.createElement('div');
+                      evento.className = 'event';
+
+                      const horario = document.createElement('div');
+                      horario.className = 'time';
+                      horario.textContent = reserva.horaInicio.substring(0, 5);
+
+                      const corpo = document.createElement('div');
+                      corpo.className = 'event-body';
+
+                      const titulo = document.createElement('strong');
+                      titulo.textContent =
+                        nomesLaboratorios[reserva.idLaboratorio] ||
+                        `Laboratório #${reserva.idLaboratorio}`;
+
+                      const detalhes = document.createElement('div');
+                      detalhes.textContent = `Usuário #${reserva.idUsuario}`;
+
+                      corpo.appendChild(titulo);
+                      corpo.appendChild(detalhes);
+
+                      evento.appendChild(horario);
+                      evento.appendChild(corpo);
+
+                      agendaHoje.appendChild(evento);
+                    });
+                  }
+                }
+
+
+              });
+            }
+          }
+
 
           tabela.innerHTML = '';
 
