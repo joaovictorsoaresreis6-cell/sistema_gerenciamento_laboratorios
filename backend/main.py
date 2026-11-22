@@ -7,6 +7,9 @@ from backend.routers.laboratorios import router as laboratorios_router
 from backend.routers.disponibilidade import router as disponibilidade_router
 from backend.routers.reservas import router as reservas_router
 from backend.routers.gerenciar_reservas import router as gerenciar_reservas_router
+from backend.routers.manutencoes import router as manutencoes_router
+
+
 
 Base.metadata.create_all(bind=engine)
 
@@ -28,6 +31,9 @@ for rota in reservas_router.routes:
     app.router.routes.append(rota)
 
 for rota in gerenciar_reservas_router.routes:
+    app.router.routes.append(rota)
+
+for rota in manutencoes_router.routes:
     app.router.routes.append(rota)
 
 @app.get("/")

@@ -1818,17 +1818,7 @@
 
           <!-- Outras telas ainda serão criadas -->
 
-          <button data-page="Aulas">
 
-            <span class="nav-icon">
-              ▤
-            </span>
-
-            <span>
-              Aulas
-            </span>
-
-          </button>
 
 
           <button data-page="Manutenções">
@@ -2052,14 +2042,16 @@
           </div>
 
 
+
           <button
             class="primary"
-            onclick="toast('Fluxo de nova reserva aberto')"
+            data-page="Reservas"
           >
 
             ＋ Nova reserva
 
           </button>
+
 
         </div>
 
@@ -2112,9 +2104,7 @@
               0
             </h2>
 
-            <span class="delta neutral">
-              5 ainda pendentes
-            </span>
+
 
           </div>
 
@@ -2137,9 +2127,7 @@
               0
             </h2>
 
-            <span class="delta neutral">
-              1 retorna amanhã
-            </span>
+
 
           </div>
 
@@ -2609,175 +2597,256 @@
       </section>
 
 
-      <!-- =====================================================
-           TELA 4 — DISPONIBILIDADE
-           ===================================================== -->
+      
+        <!-- =====================================================
+            TELA 4 — DISPONIBILIDADE
+            ===================================================== -->
 
-      <section
-        class="module-page"
-        id="disponibilidade-page"
-        style="display:none"
-      >
+        <section
+          class="module-page"
+          id="disponibilidade-page"
+          style="display:none"
+        >
 
+          <div class="module-toolbar">
 
-        <div class="module-toolbar">
+            <div>
+              <h1>Disponibilidade</h1>
 
-          <div>
+              <p>
+                Consulte quais laboratórios estão
+                livres no período informado.
+              </p>
+            </div>
 
-            <h1>
-              Disponibilidade
-            </h1>
-
-            <p>
-              Consulte quais laboratórios estão
-              livres no período informado.
-            </p>
-
-          </div>
-
-
-          <div class="toolbar-actions">
-
-            <button
-              class="secondary"
-              onclick="toast('Calendário de disponibilidade aberto')"
-            >
-              Calendário
-            </button>
+            <div class="toolbar-actions">
+              <button
+                class="secondary"
+                onclick="toast('Calendário de disponibilidade aberto')"
+              >
+                Calendário
+              </button>
+            </div>
 
           </div>
 
-        </div>
+          <div class="availability-hero">
+
+            <!-- Formulário -->
+
+            <section class="card availability-form">
+
+              <h3>Consultar disponibilidade</h3>
+
+              <p>
+                Escolha a data e o horário para
+                verificar conflitos de reservas,
+                aulas e manutenção.
+              </p>
+
+              <div class="availability-fields">
+
+                <div class="availability-field">
+                  <label>Data</label>
+                  <input type="date" id="availabilityDate">
+                </div>
+
+                <div class="availability-field">
+                  <label>Hora inicial</label>
+                  <input
+                    type="time"
+                    id="availabilityStart"
+                    value="09:00"
+                  >
+                </div>
+
+                <div class="availability-field">
+                  <label>Hora final</label>
+                  <input
+                    type="time"
+                    id="availabilityEnd"
+                    value="10:30"
+                  >
+                </div>
+
+              </div>
+
+              <div class="availability-action">
+                <button
+                  class="primary"
+                  onclick="checkAvailability()"
+                >
+                  Verificar disponibilidade
+                </button>
+              </div>
+
+            </section>
+
+            <!-- Resultado -->
+
+            <section class="card availability-results">
+
+              <div class="availability-results-head">
+                <h3>Resultado da consulta</h3>
+
+                <span id="availabilityPeriod">
+                  Aguardando consulta
+                </span>
+              </div>
+
+              <div class="availability-list" id="availabilityList">
+                <p>
+                  Informe uma data e um horário para consultar
+                  os laboratórios disponíveis.
+                </p>
+              </div>
+
+              <div class="availability-note">
+                A disponibilidade considera reservas,
+                aulas e períodos de manutenção
+                cadastrados no sistema.
+              </div>
+
+            </section>
+
+          </div>
+
+        </section>
 
 
-        <div class="availability-hero">
+        <!-- =====================================================
+            TELA 5 — MANUTENÇÕES
+            ===================================================== -->
 
+        <section
+          class="module-page"
+          id="manutencoes-page"
+          style="display:none"
+        >
+
+          <div class="module-toolbar">
+
+            <div>
+              <h1>Manutenções</h1>
+
+              <p>
+                Cadastre e acompanhe os períodos de manutenção
+                dos laboratórios.
+              </p>
+            </div>
+
+            <div class="toolbar-actions">
+              <button
+                class="primary"
+                onclick="cadastrarManutencao()"
+              >
+                ＋ Nova manutenção
+              </button>
+            </div>
+
+          </div>
+
+          <!-- Indicadores -->
+
+          <div class="reservation-summary">
+
+            <div class="card summary-card">
+              <span>Manutenções ativas</span>
+              <strong id="totalManutencoesAtivas">0</strong>
+            </div>
+
+            <div class="card summary-card">
+              <span>Concluídas</span>
+              <strong id="totalManutencoesConcluidas">0</strong>
+            </div>
+
+          </div>
 
           <!-- Formulário -->
 
-          <section class="card availability-form">
+          <section class="card table-card">
 
-            <h3>
-              Consultar disponibilidade
-            </h3>
-
-            <p>
-              Escolha a data e o horário para
-              verificar conflitos de reservas,
-              aulas e manutenção.
-            </p>
-
+            <div class="table-head">
+              <h3>Cadastrar manutenção</h3>
+            </div>
 
             <div class="availability-fields">
 
-
               <div class="availability-field">
-
-                <label>
-                  Data
-                </label>
-
-                <input
-                  type="date"
-                  id="availabilityDate"
-                >
-
+                <label>Laboratório</label>
+                <select id="manutencaoLaboratorio">
+                  <option value="">Selecione um laboratório</option>
+                </select>
               </div>
 
-
               <div class="availability-field">
-
-                <label>
-                  Hora inicial
-                </label>
-
-                <input
-                  type="time"
-                  id="availabilityStart"
-                  value="09:00"
-                >
-
+                <label>Data inicial</label>
+                <input type="date" id="manutencaoDataInicio">
               </div>
 
+              <div class="availability-field">
+                <label>Data final</label>
+                <input type="date" id="manutencaoDataFim">
+              </div>
 
               <div class="availability-field">
-
-                <label>
-                  Hora final
-                </label>
-
+                <label>Motivo</label>
                 <input
-                  type="time"
-                  id="availabilityEnd"
-                  value="10:30"
+                  type="text"
+                  id="manutencaoMotivo"
+                  maxlength="255"
+                  placeholder="Descreva o motivo da manutenção"
                 >
-
               </div>
 
             </div>
-
-
-            
-            <!-- Botão -->
 
             <div class="availability-action">
-
               <button
                 class="primary"
-                onclick="checkAvailability()"
+                onclick="cadastrarManutencao()"
               >
-
-                Verificar disponibilidade
-
+                Cadastrar manutenção
               </button>
+            </div>
+
+          </section>
+
+          <!-- Listagem -->
+
+          <section class="card table-card">
+
+            <div class="table-head">
+              <h3>Manutenções cadastradas</h3>
+            </div>
+
+            <div class="table-wrap">
+
+              <table>
+                <thead>
+                  <tr>
+                    <th>Laboratório</th>
+                    <th>Período</th>
+                    <th>Motivo</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
+
+                <tbody id="manutencoesTable">
+                  <tr>
+                    <td colspan="5">
+                      Carregando manutenções...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
             </div>
 
           </section>
 
-
-          <!-- Resultado -->
-
-          <section class="card availability-results">
-
-            <div class="availability-results-head">
-
-              <h3>
-                Resultado da consulta
-              </h3>
-
-              <span id="availabilityPeriod">
-                Aguardando consulta
-              </span>
-
-            </div>
-
-
-            <div class="availability-list" id="availabilityList">
-
-              <p>
-                Informe uma data e um horário para consultar os laboratórios disponíveis.
-              </p>
-
-            </div>
-
-            <div class="availability-note">
-
-              A disponibilidade considera reservas,
-              aulas e períodos de manutenção
-              cadastrados no sistema.
-
-            </div>
-
-          </section>
-
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
+        </section>
 
 
   <!-- =========================================================
@@ -3059,6 +3128,11 @@
         'disponibilidade-page'
       );
 
+      const manutencoesPage =
+      document.getElementById(
+        'manutencoes-page'
+      );
+
 
     buttons.forEach(btn => {
 
@@ -3102,6 +3176,13 @@
           const isAvailability =
             page === 'Disponibilidade';
 
+          const isMaintenance =
+            page === 'Manutenções';
+
+          if (isMaintenance) {
+            carregarManutencoes();
+          }
+
 
           /* Dashboard fica escondido nas
              outras páginas */
@@ -3110,7 +3191,8 @@
             'module-hidden',
             isLabs ||
             isReservations ||
-            isAvailability
+            isAvailability ||
+            isMaintenance
           );
 
 
@@ -3136,9 +3218,14 @@
             isAvailability
               ? 'block'
               : 'none';
-
+              
+          manutencoesPage.style.display =
+            isMaintenance
+              ? 'block'
+              : 'none';
 
           /* Mensagem */
+
 
           toast(
             page === 'Visão geral'
@@ -3152,6 +3239,25 @@
       );
 
     });
+
+
+      const novaReservaBtn = document.querySelector(
+        '.hero button[data-page="Reservas"]'
+      );
+
+      if (novaReservaBtn) {
+        novaReservaBtn.addEventListener('click', () => {
+          const botaoReservas = document.querySelector(
+            '.nav button[data-page="Reservas"]'
+          );
+
+          if (botaoReservas) {
+            botaoReservas.click();
+          }
+        });
+      }
+
+
 
 
     /* =========================================================
@@ -3749,6 +3855,7 @@
       async function carregarLaboratorios() {
         const tabela = document.getElementById('labTable');
         const seletorReserva = document.getElementById('resLaboratorio');
+        const seletorManutencao = document.getElementById('manutencaoLaboratorio');
 
         try {
           const resposta = await fetch('/laboratorios/');
@@ -3772,6 +3879,21 @@
                 seletorReserva.appendChild(opcao);
               });
           }
+
+              if (seletorManutencao) {
+                seletorManutencao.innerHTML =
+                  '<option value="">Selecione um laboratório</option>';
+
+                laboratorios.forEach(lab => {
+                  const opcao = document.createElement('option');
+
+                  opcao.value = lab.idLaboratorio;
+                  opcao.textContent = lab.nome;
+
+                  seletorManutencao.appendChild(opcao);
+                });
+              }
+
           const totalLaboratorios = laboratorios.length;
 
           const laboratoriosDisponiveis = laboratorios.filter(
@@ -3893,7 +4015,90 @@
         }
       }
 
+        async function carregarManutencoes() {
+          const tabela = document.getElementById('manutencoesTable');
+
+          try {
+            const resposta = await fetch('/manutencoes/');
+
+            if (!resposta.ok) {
+              throw new Error('Não foi possível carregar as manutenções.');
+            }
+
+            const manutencoes = await resposta.json();
+
+            const laboratoriosResposta = await fetch('/laboratorios/');
+
+            if (!laboratoriosResposta.ok) {
+              throw new Error('Não foi possível consultar os laboratórios.');
+            }
+
+            const laboratorios = await laboratoriosResposta.json();
+
+            const nomesLaboratorios = {};
+
+            laboratorios.forEach(lab => {
+              nomesLaboratorios[lab.idLaboratorio] = lab.nome;
+            });
+
+            const ativas = manutencoes.filter(
+              manutencao => manutencao.status === 'Ativa'
+            );
+
+            const concluidas = manutencoes.filter(
+              manutencao => manutencao.status === 'Concluída'
+            );
+
+            document.getElementById('totalManutencoesAtivas').textContent =
+              ativas.length;
+
+            document.getElementById('totalManutencoesConcluidas').textContent =
+              concluidas.length;
+
+            tabela.innerHTML = '';
+
+            if (manutencoes.length === 0) {
+              tabela.innerHTML = `
+                <tr>
+                  <td colspan="5">Nenhuma manutenção cadastrada.</td>
+                </tr>
+              `;
+              return;
+            }
+
+            manutencoes.forEach(manutencao => {
+              const linha = document.createElement('tr');
+
+              const dataInicio = manutencao.dataInicio.split('-').reverse().join('/');
+              const dataFim = manutencao.dataFim.split('-').reverse().join('/');
+
+              linha.innerHTML = `
+                <td>${nomesLaboratorios[manutencao.idLaboratorio] || 'Laboratório não encontrado'}</td>
+                <td>${dataInicio} até ${dataFim}</td>
+                <td>${manutencao.motivo}</td>
+                <td>${manutencao.status}</td>
+                <td>
+                  ${
+                    manutencao.status === 'Ativa'
+                      ? `<button class="row-btn" onclick="encerrarManutencao(${manutencao.idManutencao})">Encerrar</button>`
+                      : '—'
+                  }
+                </td>
+              `;
+
+              tabela.appendChild(linha);
+            });
+
+          } catch (erro) {
+            console.error(erro);
+            toast('Erro ao carregar manutenções.');
+          }
+        }
+
+
       document.addEventListener('DOMContentLoaded', carregarLaboratorios);
+
+
 
 
       
@@ -4222,6 +4427,105 @@
           toast('Erro ao carregar as reservas.');
         }
       }
+
+
+
+
+      async function cadastrarManutencao() {
+        const idLaboratorio = document.getElementById('manutencaoLaboratorio').value;
+        const dataInicio = document.getElementById('manutencaoDataInicio').value;
+        const dataFim = document.getElementById('manutencaoDataFim').value;
+        const motivo = document.getElementById('manutencaoMotivo').value.trim();
+
+        if (!idLaboratorio || !dataInicio || !dataFim || !motivo) {
+          toast('Preencha todos os campos da manutenção.');
+          return;
+        }
+
+        if (dataFim < dataInicio) {
+          toast('A data final não pode ser anterior à inicial.');
+          return;
+        }
+
+        try {
+          const resposta = await fetch('/manutencoes/', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              idLaboratorio: Number(idLaboratorio),
+              dataInicio: dataInicio,
+              dataFim: dataFim,
+              motivo: motivo
+            })
+          });
+
+          if (!resposta.ok) {
+            const erro = await resposta.json();
+            throw new Error(
+              erro.detail || 'Não foi possível cadastrar a manutenção.'
+            );
+          }
+
+          toast('Manutenção cadastrada com sucesso.');
+
+          document.getElementById('manutencaoLaboratorio').value = '';
+          document.getElementById('manutencaoDataInicio').value = '';
+          document.getElementById('manutencaoDataFim').value = '';
+          document.getElementById('manutencaoMotivo').value = '';
+
+          await carregarManutencoes();
+
+        } catch (erro) {
+          console.error('Erro ao cadastrar manutenção:', erro);
+          toast(erro.message || 'Erro ao cadastrar manutenção.');
+        }
+      }
+      
+
+      async function encerrarManutencao(idManutencao) {
+        const confirmar = confirm(
+          'Tem certeza que deseja encerrar esta manutenção?'
+        );
+
+        if (!confirmar) {
+          return;
+        }
+
+        try {
+          const resposta = await fetch(
+            `/manutencoes/${idManutencao}`,
+            {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                status: 'Concluída'
+              })
+            }
+          );
+
+          if (!resposta.ok) {
+            const erro = await resposta.json();
+
+            throw new Error(
+              erro.detail || 'Não foi possível encerrar a manutenção.'
+            );
+          }
+
+          toast('Manutenção encerrada com sucesso.');
+
+          await carregarManutencoes();
+
+        } catch (erro) {
+          console.error('Erro ao encerrar manutenção:', erro);
+          toast(erro.message || 'Erro ao encerrar manutenção.');
+        }
+      }
+
+
 
       document.addEventListener('DOMContentLoaded', carregarReservas);
     </script>

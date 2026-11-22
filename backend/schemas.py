@@ -78,3 +78,28 @@ class NotificacaoResponse(BaseModel):
     idUsuario: int
 
     model_config = ConfigDict(from_attributes=True)
+
+# =========================
+# MANUTENÇÃO
+# =========================
+
+class ManutencaoCreate(BaseModel):
+    dataInicio: date
+    dataFim: date
+    motivo: str = Field(min_length=1, max_length=255)
+    idLaboratorio: int
+
+
+class ManutencaoUpdate(BaseModel):
+    status: str = Field(min_length=1, max_length=30)
+
+
+class ManutencaoResponse(BaseModel):
+    idManutencao: int
+    dataInicio: date
+    dataFim: date
+    motivo: str
+    status: str
+    idLaboratorio: int
+
+    model_config = ConfigDict(from_attributes=True)
