@@ -26,8 +26,11 @@ def get_db():
 
 @router.get("/", response_model=list[LaboratorioResponse])
 def listar_laboratorios(db: Session = Depends(get_db)):
-    return db.query(Laboratorio).all()
-
+    return (
+        db.query(Laboratorio)
+        .order_by(Laboratorio.nome.asc())
+        .all()
+    )
 
 # =========================
 # CADASTRAR LABORATÓRIO
